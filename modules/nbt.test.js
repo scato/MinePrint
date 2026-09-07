@@ -1,0 +1,76 @@
+import { readNbt } from './nbt.js';
+
+function assertTagFromInput(expected, hex) {
+    const input = Uint8Array.fromHex(hex);
+    const tag = readNbt(input);
+
+    console.assert(tag.type === expected.type, `${JSON.stringify(tag.type)} === ${JSON.stringify(expected.type)}`);
+    console.assert(tag.itemType === expected.itemType, `${JSON.stringify(tag.itemType)} === ${JSON.stringify(expected.itemType)}`);
+    console.assert(tag.name === expected.name, `${JSON.stringify(tag.name)} === ${JSON.stringify(expected.name)}`);
+
+    if (typeof tag.payload === 'bigint' || typeof expected.payload === 'bigint') {
+        console.assert(tag.payload === expected.payload, `${tag.payload} === ${expected.payload}`);
+    } else {
+        console.assert(JSON.stringify(tag.payload) === JSON.stringify(expected.payload), `${JSON.stringify(tag.payload)} === ${JSON.stringify(expected.payload)}`);
+    }
+}
+
+assertTagFromInput(
+    {type: 1, itemType: null, name: "foo", payload: 42},
+    "010003666f6f2a"
+);
+
+assertTagFromInput(
+    {type: 2, itemType: null, name: "foo", payload: 42},
+    "020003666f6f002a"
+);
+
+assertTagFromInput(
+    {type: 3, itemType: null, name: "foo", payload: 42},
+    "030003666f6f0000002a"
+);
+
+assertTagFromInput(
+    {type: 4, itemType: null, name: "foo", payload: BigInt(42)},
+    "040003666f6f000000000000002a"
+);
+
+assertTagFromInput(
+    {type: 5, itemType: null, name: "foo", payload: 0.15625},
+    "050003666f6f3e200000"
+);
+
+assertTagFromInput(
+    {type: 6, itemType: null, name: "foo", payload: 0.01171875},
+    "060003666f6f3f88000000000000"
+);
+
+assertTagFromInput(
+    {type: 7, itemType: null, name: "foo", payload: [1, 2, 3]},
+    "070003666f6f00000003010203"
+);
+
+assertTagFromInput(
+    {type: 8, itemType: null, name: "foo", payload: "\"\\bär\""},
+    "080003666f6f0007225c62c3a47222"
+);
+
+assertTagFromInput(
+    {type: 9, itemType: 1, name: "foo", payload: [1, 2, 3]},
+    "090003666f6f0100000003010203"
+);
+
+assertTagFromInput(
+    {type: 10, itemType: null, name: "foo", payload: [{"type": 1, "itemType": null, "name": "bar", "payload": 42}]},
+    "0a0003666f6f0100036261722a00"
+);
+
+assertTagFromInput(
+    {type: 11, itemType: null, name: "foo", payload: [1, 2, 3]},
+    "0b0003666f6f00000003000100020003"
+)
+
+assertTagFromInput(
+    {type: 12, itemType: null, name: "foo", payload: [1, 2, 3]},
+    "0c0003666f6f00000003000000010000000200000003"
+)
