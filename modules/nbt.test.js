@@ -1,4 +1,4 @@
-import { readNbt } from './nbt.js';
+import { readNbt, writeNbt } from './nbt.js';
 
 function assertTagFromInput(expected, hex) {
     const input = Uint8Array.fromHex(hex);
@@ -10,6 +10,8 @@ function assertTagFromInput(expected, hex) {
 
     if (typeof tag.payload === 'bigint' || typeof expected.payload === 'bigint') {
         console.assert(tag.payload === expected.payload, `${tag.payload} === ${expected.payload}`);
+    } else if (typeof tag.payload[0] === 'bigint' || typeof expected.payload[0] === 'bigint') {
+        console.assert(tag.payload.toString() === expected.payload.toString(), `${tag.payload} === ${expected.payload}`);
     } else {
         console.assert(JSON.stringify(tag.payload) === JSON.stringify(expected.payload), `${JSON.stringify(tag.payload)} === ${JSON.stringify(expected.payload)}`);
     }
@@ -67,10 +69,77 @@ assertTagFromInput(
 
 assertTagFromInput(
     {type: 11, itemType: null, name: "foo", payload: [1, 2, 3]},
-    "0b0003666f6f00000003000100020003"
+    "0b0003666f6f00000003000000010000000200000003"
 )
 
 assertTagFromInput(
-    {type: 12, itemType: null, name: "foo", payload: [1, 2, 3]},
-    "0c0003666f6f00000003000000010000000200000003"
+    {type: 12, itemType: null, name: "foo", payload: [BigInt(1), BigInt(2), BigInt(3)]},
+    "0c0003666f6f00000003000000000000000100000000000000020000000000000003"
+)
+
+function assertOutputFromTag(expected, tag) {
+    const output = writeNbt(tag);
+    const hex = output.toHex();
+
+    console.assert(hex === expected, `"${hex}" === "${expected}"`);
+}
+
+assertOutputFromTag(
+    "010003666f6f2a",
+    {type: 1, itemType: null, name: "foo", payload: 42}
+);
+
+assertOutputFromTag(
+    "020003666f6f002a",
+    {type: 2, itemType: null, name: "foo", payload: 42}
+);
+
+assertOutputFromTag(
+    "030003666f6f0000002a",
+    {type: 3, itemType: null, name: "foo", payload: 42}
+);
+
+assertOutputFromTag(
+    "040003666f6f000000000000002a",
+    {type: 4, itemType: null, name: "foo", payload: BigInt(42)}
+);
+
+assertOutputFromTag(
+    "050003666f6f3e200000",
+    {type: 5, itemType: null, name: "foo", payload: 0.15625}
+);
+
+assertOutputFromTag(
+    "060003666f6f3f88000000000000",
+    {type: 6, itemType: null, name: "foo", payload: 0.01171875}
+);
+
+assertOutputFromTag(
+    "070003666f6f00000003010203",
+    {type: 7, itemType: null, name: "foo", payload: [1, 2, 3]}
+);
+
+assertOutputFromTag(
+    "080003666f6f0007225c62c3a47222",
+    {type: 8, itemType: null, name: "foo", payload: "\"\\bär\""}
+);
+
+assertOutputFromTag(
+    "090003666f6f0100000003010203",
+    {type: 9, itemType: 1, name: "foo", payload: [1, 2, 3]}
+);
+
+assertOutputFromTag(
+    "0a0003666f6f0100036261722a",
+    {type: 10, itemType: null, name: "foo", payload: [{"type": 1, "itemType": null, "name": "bar", "payload": 42}]}
+);
+
+assertOutputFromTag(
+    "0b0003666f6f00000003000000010000000200000003",
+    {type: 11, itemType: null, name: "foo", payload: [1, 2, 3]}
+)
+
+assertOutputFromTag(
+    "0c0003666f6f00000003000000000000000100000000000000020000000000000003",
+    {type: 12, itemType: null, name: "foo", payload: [BigInt(1), BigInt(2), BigInt(3)]}
 )
