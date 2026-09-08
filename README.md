@@ -2,7 +2,16 @@
 A Minecraft .nbt structure blueprint viewer
 
 ## Development
-npm install http-server -g
-http-server
+Install http-server:
 
-http://localhost:8080/test.html
+```
+npm install http-server -g
+```
+
+Start http-server
+
+```
+http-server
+```
+
+Run the tests by browsing to http://localhost:8080/test.html
