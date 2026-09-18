@@ -1,4 +1,4 @@
-function readNbtPayload(input, offset, type, itemType) {
+function readNbtPayload(input, offset, type) {
     const dataView = new DataView(input.buffer);
     let length;
 
@@ -26,16 +26,19 @@ function readNbtPayload(input, offset, type, itemType) {
 
             return [new TextDecoder().decode(input.slice(offset, offset + length)), offset + length];
         case 9:
-            length = dataView.getInt32(offset);
-            const items = new Array(length);
+            const itemType = dataView.getUint8(offset);
+            offset += 1;
 
+            length = dataView.getInt32(offset);
             offset += 4;
+
+            const items = new Array(length);
 
             for (let i = 0; i < length; i++) {
                 [items[i], offset] = readNbtPayload(input, offset, itemType);
             }
 
-            return [items, offset];
+            return [[itemType, items], offset];
         case 10:
             const tags = new Array();
 
@@ -72,27 +75,21 @@ function readNbtPayload(input, offset, type, itemType) {
 
 function readNbtTag(input, offset) {
     const dataView = new DataView(input.buffer);
-    const tag = {};
+    let payload;
 
-    tag.type = dataView.getUint8(offset);
-    tag.itemType = null;
-
+    const type = dataView.getUint8(offset);
     offset += 1;
 
     const nameLength = dataView.getUint16(offset);
-    const nameBytes = input.slice(offset + 2, offset + 2 + nameLength);
-    tag.name = new TextDecoder().decode(nameBytes);
+    offset += 2;
 
-    offset += 2 + nameLength;
+    const nameBytes = input.slice(offset, offset + nameLength);
+    const name = new TextDecoder().decode(nameBytes);
+    offset += nameLength;
 
-    if (tag.type === 9) {
-        tag.itemType = dataView.getUint8(offset);
-        offset += 1;
-    }
+    [payload, offset] = readNbtPayload(input, offset, type);
 
-    [tag.payload, offset] = readNbtPayload(input, offset, tag.type, tag.itemType);
-
-    return [tag, offset];
+    return [{type, name, payload}, offset];
 }
 
 /**
@@ -112,7 +109,7 @@ export function readNbt(input) {
     return tag;
 }
 
-function writeNbtPayload(type, itemType, payload, output, offset) {
+function writeNbtPayload(type, payload, output, offset) {
     const dataView = new DataView(output);
 
     switch (type) {
@@ -145,7 +142,7 @@ function writeNbtPayload(type, itemType, payload, output, offset) {
             dataView.setInt32(offset, payload.length);
             offset += 4;
             for (let i = 0; i < payload.length; i++) {
-                offset = writeNbtPayload(1, null, payload[i], output, offset);
+                offset = writeNbtPayload(1, payload[i], output, offset);
             }
             return offset;
         case 8:
@@ -157,11 +154,18 @@ function writeNbtPayload(type, itemType, payload, output, offset) {
             new Uint8Array(output).set(nameBytes, offset);
             return offset + nameBytes.length;
         case 9:
+            const [itemType, items] = payload;
+
+            output.resize(offset + 1);
+            dataView.setUint8(offset, itemType);
+            offset += 1;
+
             output.resize(offset + 4);
-            dataView.setInt32(offset, payload.length);
+            dataView.setInt32(offset, items.length);
             offset += 4;
-            for (let i = 0; i < payload.length; i++) {
-                offset = writeNbtPayload(itemType, null, payload[i], output, offset);
+
+            for (let i = 0; i < items.length; i++) {
+                offset = writeNbtPayload(itemType, items[i], output, offset);
             }
             return offset;
         case 10:
@@ -177,7 +181,7 @@ function writeNbtPayload(type, itemType, payload, output, offset) {
             dataView.setInt32(offset, payload.length);
             offset += 4;
             for (let i = 0; i < payload.length; i++) {
-                offset = writeNbtPayload(3, null, payload[i], output, offset);
+                offset = writeNbtPayload(3, payload[i], output, offset);
             }
             return offset;
         case 12:
@@ -185,7 +189,7 @@ function writeNbtPayload(type, itemType, payload, output, offset) {
             dataView.setInt32(offset, payload.length);
             offset += 4;
             for (let i = 0; i < payload.length; i++) {
-                offset = writeNbtPayload(4, null, payload[i], output, offset);
+                offset = writeNbtPayload(4, payload[i], output, offset);
             }
             return offset;
         default:
@@ -200,15 +204,9 @@ function writeNbtTag(tag, output, offset) {
     dataView.setUint8(offset, tag.type);
     offset += 1;
 
-    offset = writeNbtPayload(8, null, tag.name, output, offset);
+    offset = writeNbtPayload(8, tag.name, output, offset);
 
-    if (tag.type === 9) {
-        output.resize(offset + 1);
-        dataView.setUint8(offset, tag.itemType);
-        offset += 1;
-    }
-
-    return writeNbtPayload(tag.type, tag.itemType, tag.payload, output, offset);
+    return writeNbtPayload(tag.type, tag.payload, output, offset);
 }
 
 /**
