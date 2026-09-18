@@ -76,6 +76,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else if (name.match(/_door$/)) {
                     blockStates.push({Properties: {half: "lower"}, Name: name});
                     blockStates.push({Properties: {half: "upper"}, Name: name});
+                } else if (name.match(/(:|_)glass_pane$/)) {
+                    blockStates.push({Properties: {north: "true", east: "false", south: "true", west: "false"}, Name: name});
+                    blockStates.push({Properties: {north: "false", east: "true", south: "false", west: "true"}, Name: name});
+                } else if (name.match(/_glazed_terracotta$/)) {
+                    blockStates.push({Properties: {facing: "east"}, Name: name});
+                    blockStates.push({Properties: {facing: "north"}, Name: name});
+                    blockStates.push({Properties: {facing: "west"}, Name: name});
+                    blockStates.push({Properties: {facing: "south"}, Name: name});
                 } else if (name.match(/_log$/) || name === "minecraft:bamboo_block" || name === "minecraft:basalt") {
                     blockStates.push({Properties: {axis: "x"}, Name: name});
                     blockStates.push({Properties: {axis: "y"}, Name: name});
@@ -93,14 +101,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     blockStates.push({Properties: {facing: "north", half: "top"}, Name: name});
                     blockStates.push({Properties: {facing: "west", half: "top"}, Name: name});
                     blockStates.push({Properties: {facing: "south", half: "top"}, Name: name});
-                } else {
+                } else if (name !== "minecraft:jigsaw") {
                     blockStates.push({Name: name});
                 }
             }
 
             const width = 50;
-            const depth = 4;
+            const depth = 5;
+            const numStates = blockStates.length;
             blockStates = blockStates.slice(0, width * depth);
+            console.log(`Showing ${blockStates.length} of ${numStates} blockstates`);
 
             const size = [width, 1, depth];
             const blocks = blockStates.map((_, i) => ({pos: [i % width, 0, Math.floor(i / width)], state: i}));
