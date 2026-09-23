@@ -73,6 +73,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     blockStates.push({Properties: {part: "head", facing: "north"}, Name: name});
                     blockStates.push({Properties: {part: "head", facing: "west"}, Name: name});
                     blockStates.push({Properties: {part: "head", facing: "south"}, Name: name});
+                } else if (name.match(/_coral_wall_fan$/)) {
+                    blockStates.push({Properties: {facing: "east"}, Name: name});
+                    blockStates.push({Properties: {facing: "north"}, Name: name});
+                    blockStates.push({Properties: {facing: "west"}, Name: name});
+                    blockStates.push({Properties: {facing: "south"}, Name: name});
                 } else if (name.match(/_door$/)) {
                     blockStates.push({Properties: {half: "lower"}, Name: name});
                     blockStates.push({Properties: {half: "upper"}, Name: name});
@@ -84,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     blockStates.push({Properties: {facing: "north"}, Name: name});
                     blockStates.push({Properties: {facing: "west"}, Name: name});
                     blockStates.push({Properties: {facing: "south"}, Name: name});
-                } else if (name.match(/_log$/) || name === "minecraft:bamboo_block" || name === "minecraft:basalt") {
+                } else if (name.match(/_log$/) || name.match(/(crimson)_stem$/) || name === "minecraft:bamboo_block" || name === "minecraft:basalt") {
                     blockStates.push({Properties: {axis: "x"}, Name: name});
                     blockStates.push({Properties: {axis: "y"}, Name: name});
                     blockStates.push({Properties: {axis: "z"}, Name: name});
@@ -101,13 +106,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     blockStates.push({Properties: {facing: "north", half: "top"}, Name: name});
                     blockStates.push({Properties: {facing: "west", half: "top"}, Name: name});
                     blockStates.push({Properties: {facing: "south", half: "top"}, Name: name});
+                } else if (name.match(/(:|_)wall_torch$/)) {
+                    blockStates.push({Properties: {facing: "east"}, Name: name});
+                    blockStates.push({Properties: {facing: "north"}, Name: name});
+                    blockStates.push({Properties: {facing: "west"}, Name: name});
+                    blockStates.push({Properties: {facing: "south"}, Name: name});
                 } else if (name !== "minecraft:jigsaw") {
                     blockStates.push({Name: name});
                 }
             }
 
             const width = 50;
-            const depth = 5;
+            const depth = 14;
             const numStates = blockStates.length;
             blockStates = blockStates.slice(0, width * depth);
             console.log(`Showing ${blockStates.length} of ${numStates} blockstates`);

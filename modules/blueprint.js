@@ -1,31 +1,19 @@
 const BED_SUFFIX = {"foot": "-top-foot", "head": "-top-head"};
 const DOOR_SUFFIX = {"lower": "-bottom", "upper": "-top"};
-const LOG_SUFFIX = {"x": "-horizontal", "y": "-top", "z": ""};
+const LOG_SUFFIX = {"x": "", "y": "-top", "z": ""};
 const SLAB_PREFIX = {"bottom": "", "double": "double-", "top": ""};
-const SLAB_SUFFIX = {"bottom": "", "double": "", "top": "-top"};
 
-function parseBlockstate(input) {
-    const match = input.match(/^([^\[\]]*)(?:\[([^\]]*)\])?$/);
-    const name = match[1];
-    let properties = undefined;
-
-    if (match[2] !== undefined) {
-        properties = {};
-        for (let kv of match[2].split(",")) {
-            let [k, v] = kv.split("=");
-
-            properties[k] = v;
-        }
-    }
-
-    return {
-        Properties: properties,
-        Name: name
-    }
-}
+const ALTERNATIVE_NAMING = {
+    "double-blackstone-slab": "blackstone-double-slab",
+    "copper-door-top": "copper-door",
+    "copper-door-bottom": "copper-door",
+    "damaged-anvil": "anvil",
+    "dark-oak-leaves": "oak-leaves",
+    "deepslate-lapis-ore": "deepslate-lapis-lazuli-ore",
+};
 
 function generateCell(blockstate) {
-    if (blockstate.Name === "minecraft:air") {
+    if (blockstate.Name.match(/(:|_)air$/)) {
         return null;
     }
 
@@ -34,25 +22,35 @@ function generateCell(blockstate) {
     sprite = sprite.replace("minecraft:", "");
     sprite = sprite.replaceAll("_", "-");
 
+    let match;
+    if (match = blockstate.Name.match(/^minecraft:(amethyst|bamboo|coal|copper)_block$/)) {
+        sprite = "block-of-" + match[1];
+    } else if (match = blockstate.Name.match(/^minecraft:(comparator)$/)) {
+        sprite = "redstone-" + match[1];
+    } else if (match = blockstate.Name.match(/minecraft:((?:cyan_|)candle)?_cake/)) {
+        sprite = "cake-with-" + match[1].replace("_", "-");
+    }
+
     if (blockstate.Name.match(/_bed$/)) {
         sprite += BED_SUFFIX[blockstate.Properties.part];
     } else if (blockstate.Name.match(/_door$/)) {
         sprite += DOOR_SUFFIX[blockstate.Properties.half];
-    } else if (blockstate.Name.match(/_log$/) || blockstate.Name === "minecraft:basalt") {
+    } else if (blockstate.Name.match(/_fungus$/)) {
+        sprite = sprite.replace("-fungus", "-fungi");
+    } else if (blockstate.Name.match(/_log$/) || blockstate.Name.match(/(crimson)_stem$/) || blockstate.Name === "minecraft:basalt" || blockstate.Name === "minecraft:bamboo_block") {
         sprite += LOG_SUFFIX[blockstate.Properties.axis];
     } else if (blockstate.Name.match(/_shelf$/)) {
         sprite += "-front";
     } else if (blockstate.Name.match(/_slab$/)) {
-        sprite = SLAB_PREFIX[blockstate.Properties.type] + sprite + SLAB_SUFFIX[blockstate.Properties.type];
+        sprite = SLAB_PREFIX[blockstate.Properties.type] + sprite;
+    } else if (blockstate.Name.match(/_coral_wall_fan$/) || blockstate.Name.match(/(:|_)wall_torch$/)) {
+        sprite = sprite.replace("wall-", "");
+    } else if (blockstate.Name.match(/_wall_head$/)) {
+        sprite = sprite.replace("wall-", "");
     } else if (blockstate.Name.match(/_wood$/)) {
         sprite = sprite.replace("-wood", "-log");
-    } else if (blockstate.Name === "minecraft:amethyst_block") {
-        sprite = "block-of-amethyst";
-    } else if (blockstate.Name === "minecraft:bamboo_block") {
-        sprite = "block-of-bamboo";
-        sprite += LOG_SUFFIX[blockstate.Properties.axis];
-    } else if (blockstate.Name === "minecraft:grass_block") {
-        // sprite += "-top";
+    } else if (blockstate.Name.match(/^minecraft:crimson_nylium$/)) {
+        sprite += "-top";
     }
 
     if (blockstate.Name.match(/_bed$/)) {
@@ -68,10 +66,23 @@ function generateCell(blockstate) {
         }
     }
 
-    if (blockstate.Name.match(/_concrete_slab$/) && blockstate.Properties.type === "top") {
+    if (blockstate.Name.match(/_slab$/) && blockstate.Properties.type === "top") {
         sprite = sprite.replace("-top", "");
         const transform = "scaleY(-1)";
         return {sprite, blockstate, transform};
+    }
+
+    if (blockstate.Name.match(/_coral_wall_fan$/) || blockstate.Name.match(/(:|_)wall_torch$/)) {
+        if (blockstate.Properties.facing === "east") {
+            const transform = "rotate(90deg)";
+            return {sprite, blockstate, transform};
+        } else if (blockstate.Properties.facing === "south") {
+            const transform = "rotate(180deg)";
+            return {sprite, blockstate, transform};
+        } else if (blockstate.Properties.facing === "west") {
+            const transform = "rotate(270deg)";
+            return {sprite, blockstate, transform};
+        }
     }
 
     if (blockstate.Name.match(/(:|_)glass_pane$/) && blockstate.Properties.east === "true") {
@@ -119,17 +130,44 @@ function generateCell(blockstate) {
         return {sprite, blockstate, transform};
     }
 
-    if (blockstate.Name === "minecraft:basalt" && blockstate.Properties.axis === "x") {
-        sprite = sprite.replace("-horizontal", "");
-        const transform = "rotate(90deg)";
-        return {sprite, blockstate, transform};
+    if (blockstate.Name.match(/_log$/) || blockstate.Name.match(/(crimson)_stem$/) || blockstate.Name === "minecraft:basalt" || blockstate.Name === "minecraft:bamboo_block") {
+        if (blockstate.Properties.axis !== "y") {
+            sprite = sprite.replace("-stem", "-hyphae");
+        }
+
+        if (blockstate.Properties.axis === "x") {
+            const transform = "rotate(90deg)";
+            return {sprite, blockstate, transform};
+        }
     }
 
-    if (blockstate.Name === "minecraft:blackstone_slab" && blockstate.Properties.type === "double") {
-        sprite = "blackstone-double-slab";
+    for (let key of Object.keys(ALTERNATIVE_NAMING)) {
+        if (sprite === key) {
+            sprite = ALTERNATIVE_NAMING[key];
+        }
     }
 
     return {sprite, blockstate};
+}
+
+function parseBlockstate(input) {
+    const match = input.match(/^([^\[\]]*)(?:\[([^\]]*)\])?$/);
+    const name = match[1];
+    let properties = undefined;
+
+    if (match[2] !== undefined) {
+        properties = {};
+        for (let kv of match[2].split(",")) {
+            let [k, v] = kv.split("=");
+
+            properties[k] = v;
+        }
+    }
+
+    return {
+        Properties: properties,
+        Name: name
+    }
 }
 
 export function generateLayers(size, blocks, palette, padding = 0) {
