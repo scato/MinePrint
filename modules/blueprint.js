@@ -3,13 +3,50 @@ const DOOR_SUFFIX = {"lower": "-bottom", "upper": "-top"};
 const LOG_SUFFIX = {"x": "", "y": "-top", "z": ""};
 const SLAB_PREFIX = {"bottom": "", "double": "double-", "top": ""};
 
+const RAIL_SUFFIX = {
+    "ascending_east": "-horizontal",
+    "ascending_north": "",
+    "ascending_south": "",
+    "ascending_west": "-horizontal",
+    "east_west": "-horizontal",
+    "north_east": "-corner-north-west",
+    "north_south": "",
+    "north_west": "-corner-south-west",
+    "south_east": "-corner-north-east",
+    "south_west": "-corner-south-east"
+}
+
 const ALTERNATIVE_NAMING = {
     "double-blackstone-slab": "blackstone-double-slab",
+    "cake-with-black-candle": "black-candle-cake",
+    "cake-with-blue-candle": "blue-candle-cake",
+    "cake-with-brown-candle": "brown-candle-cake",
     "copper-door-top": "copper-door",
     "copper-door-bottom": "copper-door",
     "damaged-anvil": "anvil",
     "dark-oak-leaves": "oak-leaves",
     "deepslate-lapis-ore": "deepslate-lapis-lazuli-ore",
+    "dried-ghast": "dried-ghast-state-1-front",
+    "exposed-copper-door-top": "exposed-copper-door",
+    "exposed-copper-door-bottom": "exposed-copper-door",
+    "jack-o-lantern": "jack-o%27lantern",
+    "block-of-lapis": "block-of-lapis-lazuli",
+    "lapis-ore": "lapis-lazuli-ore",
+    "large-amethyst-bud": "amethyst-bud",
+    "note-block": "jukebox-side",
+    "oxidized-copper-door-top": "oxidized-copper-door",
+    "oxidized-copper-door-bottom": "oxidized-copper-door",
+    "pale-oak-door-top": "pale-oak-door",
+    "pale-oak-door-bottom": "pale-oak-door",
+    "petrified-oak-slab": "oak-slab",
+    "double-petrified-oak-slab": "double-oak-slab",
+    "piston-head": "piston-arm-collision",
+    "poplar-door-top": "poplar-door",
+    "poplar-door-bottom": "poplar-door",
+    "poplar-shelf-front": "poplar-shelf",
+    "redstone-wire": "redstone-dust",
+    "skeleton-wall-skull": "skeleton-skull",
+    "smooth-quartz": "smooth-quartz-block",
 };
 
 function generateCell(blockstate) {
@@ -23,12 +60,12 @@ function generateCell(blockstate) {
     sprite = sprite.replaceAll("_", "-");
 
     let match;
-    if (match = blockstate.Name.match(/^minecraft:(amethyst|bamboo|coal|copper)_block$/)) {
-        sprite = "block-of-" + match[1];
-    } else if (match = blockstate.Name.match(/^minecraft:(comparator)$/)) {
+    if (match = blockstate.Name.match(/^minecraft:(amethyst|bamboo|coal|copper|diamond|emerald|gold|iron|lapis|netherite|quartz|raw_copper|raw_gold|raw_iron|resin|redstone|stripped_bamboo)_block$/)) {
+        sprite = "block-of-" + match[1].replace("_", "-");
+    } else if (match = blockstate.Name.match(/^minecraft:(comparator|repeater)$/)) {
         sprite = "redstone-" + match[1];
-    } else if (match = blockstate.Name.match(/minecraft:((?:cyan_|)candle)?_cake/)) {
-        sprite = "cake-with-" + match[1].replace("_", "-");
+    } else if (match = blockstate.Name.match(/minecraft:(.*candle)_cake/)) {
+        sprite = "cake-with-" + match[1].replaceAll("_", "-");
     }
 
     if (blockstate.Name.match(/_bed$/)) {
@@ -37,8 +74,10 @@ function generateCell(blockstate) {
         sprite += DOOR_SUFFIX[blockstate.Properties.half];
     } else if (blockstate.Name.match(/_fungus$/)) {
         sprite = sprite.replace("-fungus", "-fungi");
-    } else if (blockstate.Name.match(/_log$/) || blockstate.Name.match(/(crimson)_stem$/) || blockstate.Name === "minecraft:basalt" || blockstate.Name === "minecraft:bamboo_block") {
+    } else if (blockstate.Name.match(/_log$/) || blockstate.Name.match(/(crimson)_stem$/) || blockstate.Name === "minecraft:basalt" || blockstate.Name === "minecraft:bamboo_block" || blockstate.Name === "minecraft:hay_block" || blockstate.Name === "minecraft:polished_basalt" || blockstate.Name === "minecraft:stripped_bamboo_block") {
         sprite += LOG_SUFFIX[blockstate.Properties.axis];
+    } else if (blockstate.Name === "minecraft:rail") {
+        sprite += RAIL_SUFFIX[blockstate.Properties.shape];
     } else if (blockstate.Name.match(/_shelf$/)) {
         sprite += "-front";
     } else if (blockstate.Name.match(/_slab$/)) {
@@ -49,7 +88,7 @@ function generateCell(blockstate) {
         sprite = sprite.replace("wall-", "");
     } else if (blockstate.Name.match(/_wood$/)) {
         sprite = sprite.replace("-wood", "-log");
-    } else if (blockstate.Name.match(/^minecraft:crimson_nylium$/)) {
+    } else if (blockstate.Name.match(/^minecraft:(crimson_nylium|dirt_path|dried_kelp_block|grass_block|mycelium)$/)) {
         sprite += "-top";
     }
 
@@ -67,7 +106,7 @@ function generateCell(blockstate) {
     }
 
     if (blockstate.Name.match(/_slab$/) && blockstate.Properties.type === "top") {
-        sprite = sprite.replace("-top", "");
+        sprite = sprite.replace("-top", "").replace("petrified-", "");
         const transform = "scaleY(-1)";
         return {sprite, blockstate, transform};
     }
@@ -130,10 +169,12 @@ function generateCell(blockstate) {
         return {sprite, blockstate, transform};
     }
 
-    if (blockstate.Name.match(/_log$/) || blockstate.Name.match(/(crimson)_stem$/) || blockstate.Name === "minecraft:basalt" || blockstate.Name === "minecraft:bamboo_block") {
+    if (blockstate.Name.match(/_log$/) || blockstate.Name.match(/(crimson)_stem$/) || blockstate.Name === "minecraft:basalt" || blockstate.Name === "minecraft:bamboo_block" || blockstate.Name === "minecraft:hay_block" || blockstate.Name === "minecraft:polished_basalt" || blockstate.Name === "minecraft:stripped_bamboo_block") {
         if (blockstate.Properties.axis !== "y") {
             sprite = sprite.replace("-stem", "-hyphae");
         }
+
+        sprite = sprite.replace("hay-block", "hay-bale");
 
         if (blockstate.Properties.axis === "x") {
             const transform = "rotate(90deg)";

@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     blockStates.push({Properties: {facing: "north"}, Name: name});
                     blockStates.push({Properties: {facing: "west"}, Name: name});
                     blockStates.push({Properties: {facing: "south"}, Name: name});
-                } else if (name.match(/_log$/) || name.match(/(crimson)_stem$/) || name === "minecraft:bamboo_block" || name === "minecraft:basalt") {
+                } else if (name.match(/_log$/) || name.match(/(crimson)_stem$/) || name === "minecraft:bamboo_block" || name === "minecraft:basalt" || name === "minecraft:hay_block" || name === "minecraft:polished_basalt" || name === "minecraft:stripped_bamboo_block") {
                     blockStates.push({Properties: {axis: "x"}, Name: name});
                     blockStates.push({Properties: {axis: "y"}, Name: name});
                     blockStates.push({Properties: {axis: "z"}, Name: name});
@@ -111,13 +111,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     blockStates.push({Properties: {facing: "north"}, Name: name});
                     blockStates.push({Properties: {facing: "west"}, Name: name});
                     blockStates.push({Properties: {facing: "south"}, Name: name});
+                } else if (name === "minecraft:rail") {
+                    blockStates.push({Properties: {shape: "ascending_east"}, Name: name});
+                    blockStates.push({Properties: {shape: "ascending_north"}, Name: name});
+                    blockStates.push({Properties: {shape: "ascending_south"}, Name: name});
+                    blockStates.push({Properties: {shape: "ascending_west"}, Name: name});
+                    blockStates.push({Properties: {shape: "east_west"}, Name: name});
+                    blockStates.push({Properties: {shape: "north_east"}, Name: name});
+                    blockStates.push({Properties: {shape: "north_south"}, Name: name});
+                    blockStates.push({Properties: {shape: "north_west"}, Name: name});
+                    blockStates.push({Properties: {shape: "south_east"}, Name: name});
+                    blockStates.push({Properties: {shape: "south_west"}, Name: name});
                 } else if (name !== "minecraft:jigsaw") {
                     blockStates.push({Name: name});
                 }
             }
 
             const width = 50;
-            const depth = 14;
+            const depth = 42;
             const numStates = blockStates.length;
             blockStates = blockStates.slice(0, width * depth);
             console.log(`Showing ${blockStates.length} of ${numStates} blockstates`);
