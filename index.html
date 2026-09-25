@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MinePrint</title>
+        <link rel="icon" href="data:">
+        <link rel="stylesheet" href="main.css">
+        <link rel="stylesheet" href="blueprint.css">
+        <script src="main.js" type="module"></script>
+        <meta name="viewport" content="width=device-width">
+    </head>
+    <body>
+        <div class="main">
+            <h1>
+                MinePrint
+                <a href="about.html" class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M10.06 1C13 1 15 2.89 15 5.53a4.59 4.59 0 01-2.29 4.08c-1.42.92-1.82 1.53-1.82 2.71V13H8.38v-.81a3.84 3.84 0 012-3.84c1.34-.9 1.79-1.53 1.79-2.71a2.1 2.1 0 00-2.08-2.14h-.17a2.3 2.3 0 00-2.38 2.22v.17H5A4.71 4.71 0 019.51 1a5 5 0 01.55 0"></path><circle cx="10" cy="17" r="2"></circle></g></svg>
+                </a>
+                <a href="index.html" class="nav-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="m19.707 10.293-1.414 1.414L17 10.414V20H3v-9.586l-1.293 1.293-1.414-1.414L10 .586zM5 8.414V18h3v-5h4v5h3V8.414l-5-5z"></path></g></svg>
+                </a>
+            </h1>
+
+            <div id="start">
+                <form action="javascript:;">
+                    <!-- no spaces between input and svg to prevent weird indentation -->
+                    <input id="start-file-upload" type="file" name="upload"><label for="start-file-upload"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M19 19H1v-2h18zM10.703 1l5.211 5.117-1.406 1.422L11 4v11H9V4L5.492 7.54 4.086 6.116 9.296 1z"></path></g></svg>
+                        Upload your own .nbt file
+                    </label>
+                </form>
+                <p>
+                    <a id="start-browse" href="javascript:;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M11.414 4H19v14H1V2h8.414zM3 16h14V6h-6.414l-2-2H3z"></path></g></svg>
+                        Load an example blueprint
+                    </a>
+                </p>
+            </div>
+
+            <div id="blueprint" style="display: none">
+                <h2>
+                    <span id="blueprint-title"></span>
+                    <form action="javascript:;" class="nav-icon">
+                        <input id="blueprint-file-upload" type="file" name="upload">
+                        <label for="blueprint-file-upload">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M19 19H1v-2h18zM10.703 1l5.211 5.117-1.406 1.422L11 4v11H9V4L5.492 7.54 4.086 6.116 9.296 1z"></path></g></svg>
+                        </label>
+                    </form>
+                </h2>
+                
+                <div id="blueprint-viewer"></div>
+            </div>
+        </div>
+    </body>
+</html>

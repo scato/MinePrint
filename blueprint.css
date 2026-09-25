@@ -22,7 +22,7 @@
     padding: 0.2em 0.5em;
 }
 
-.layered-blueprint input:checked + label, label:hover {
+.layered-blueprint input:checked + label, .layered-blueprint label:hover {
     color: #80b640;
     /*border-left-color: #80b640;*/
 }

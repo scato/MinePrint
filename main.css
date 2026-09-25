@@ -22,11 +22,20 @@ h1, h2 {
     float: right;
 }
 
-#file-upload {
+svg {
+    vertical-align: middle;
+}
+
+input[type="file"] {
     visibility: hidden;
     width: 0;
 }
 
-label[for="file-upload"] {
+label[for$="file-upload"] {
     cursor: pointer;
+}
+
+#start-browse {
+    text-decoration: none;
+    color: inherit;
 }
