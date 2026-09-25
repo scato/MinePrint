@@ -37,9 +37,10 @@ export function extractBlocks(structureTag) {
 
     return extractListItems(blocksTag.payload).map((item) => {
         const hasNbt = hasTagWithName(item, "nbt");
+        const posTag = extractTagByName(item, "pos");
         return {
             nbt: hasNbt ? extractCompoundProperties(extractTagByName(item, "nbt").payload) : undefined,
-            pos: extractListItems(extractTagByName(item, "pos").payload),
+            pos: posTag.type === 9 ? extractListItems(posTag.payload) : posTag.payload,
             state: extractTagByName(item, "state").payload
         };
     });

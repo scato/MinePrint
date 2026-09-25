@@ -11,7 +11,7 @@ const example = `
             "state": 0i
         },
         {
-            "pos": [0i, 0i, 1i],
+            "pos": [I; 0i, 0i, 1i],
             "state": 1i
         }
     ],
