@@ -1,5 +1,5 @@
 import { readSnbt } from './snbt.js';
-import { extractSize, extractBlocks, extractPalette } from './structure.js';
+import { extractSize, extractBlocks, extractPalette, lookupBlockstate } from './structure.js';
 
 const example = `
 "": {
@@ -34,6 +34,9 @@ const example = `
         },
         {
             "Name": "minecraft:air"
+        },
+        {
+            "Name": "minecraft:jigsaw"
         }
     ]
 }
@@ -78,7 +81,26 @@ expected = [
     },
     {
         "Name": "minecraft:air"
+    },
+    {
+        "Name": "minecraft:jigsaw"
     }
 ];
 actual = extractPalette(structure);
+console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);
+
+let block, palette;
+
+palette = extractPalette(structure);
+
+block = {"state": 2};
+expected = {"Name": "minecraft:air"};
+actual = lookupBlockstate(block, palette);
+
+console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);
+
+block = {"nbt": {"final_state": "minecraft:oak_log[axis=x]"}, "state": 3};
+expected = {"Properties": {"axis": "x"}, "Name": "minecraft:oak_log"};
+actual = lookupBlockstate(block, palette);
+
 console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);

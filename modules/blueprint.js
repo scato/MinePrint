@@ -1,3 +1,5 @@
+import { lookupBlockstate } from './structure.js';
+
 const BED_SUFFIX = {"foot": "-top-foot", "head": "-top-head"};
 const DOOR_SUFFIX = {"lower": "-bottom", "upper": "-top"};
 const LOG_SUFFIX = {"x": "", "y": "-top", "z": ""};
@@ -191,26 +193,6 @@ function generateCell(blockstate) {
     return {sprite, blockstate};
 }
 
-function parseBlockstate(input) {
-    const match = input.match(/^([^\[\]]*)(?:\[([^\]]*)\])?$/);
-    const name = match[1];
-    let properties = undefined;
-
-    if (match[2] !== undefined) {
-        properties = {};
-        for (let kv of match[2].split(",")) {
-            let [k, v] = kv.split("=");
-
-            properties[k] = v;
-        }
-    }
-
-    return {
-        Properties: properties,
-        Name: name
-    }
-}
-
 export function generateLayers(size, blocks, palette, padding = 0) {
     const width = size[0] + padding * 2;
     const height = size[1];
@@ -228,11 +210,8 @@ export function generateLayers(size, blocks, palette, padding = 0) {
         ));
     
     for(let block of blocks) {
-        let [x, y, z] = block.pos;
-        let blockstate = palette[block.state];
-        if (blockstate.Name === "minecraft:jigsaw") {
-            blockstate = parseBlockstate(block.nbt.final_state);
-        }
+        const [x, y, z] = block.pos;
+        const blockstate = lookupBlockstate(block, palette);
         layers[y][z + padding][x + padding] = generateCell(blockstate);
     }
 

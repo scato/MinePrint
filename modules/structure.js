@@ -57,3 +57,31 @@ export function extractPalette(structureTag) {
         };
     });
 }
+
+function parseBlockstate(input) {
+    const match = input.match(/^([^\[\]]*)(?:\[([^\]]*)\])?$/);
+    const name = match[1];
+    let properties = undefined;
+
+    if (match[2] !== undefined) {
+        properties = {};
+        for (let kv of match[2].split(",")) {
+            let [k, v] = kv.split("=");
+
+            properties[k] = v;
+        }
+    }
+
+    return {
+        Properties: properties,
+        Name: name
+    }
+}
+
+export function lookupBlockstate(block, palette) {
+    const blockstate = palette[block.state];
+    if (blockstate.Name === "minecraft:jigsaw") {
+        return parseBlockstate(block.nbt.final_state);
+    }
+    return blockstate;
+}
