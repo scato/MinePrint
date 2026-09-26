@@ -94,42 +94,41 @@ const palette = [
 ];
 
 const materials = generateMaterials(size, blocks, palette);
-const names = Object.keys(materials);
 
 // 6 materials
-console.assert(names.length === 6, `${names.length} === 6`);
+console.assert(materials.length === 6, `${materials.length} === 6`);
 
 // 2 layers
-console.assert(materials[names[0]].length === 2, `${materials[names[0]].length} === 2`);
+console.assert(materials[0].amounts.length === 2, `${materials[0].amounts.length} === 2`);
 
 let expected, actual;
 
 // 3 grass_block at layer 0
-expected = [3, 0];
-actual = materials["minecraft:grass_block"];
+expected = {sprite: "grass-block", name: "grass_block", amounts: [3, 0]};
+actual = materials[0];
 console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);
 
 // 1 poppy at layer 1
-expected = [0, 1];
-actual = materials["minecraft:poppy"];
-console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);
-
-// 1 oak_log at layer 0
-expected = [1, 0];
-actual = materials["minecraft:oak_log"];
+expected = {sprite: "poppy", name: "poppy", amounts: [0, 1]};
+actual = materials[1];
 console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);
 
 // 1 red_bed at layer 1
-expected = [0, 1];
-actual = materials["minecraft:red_bed"];
+expected = {sprite: "red-bed", name: "red_bed", amounts: [0, 1]};
+actual = materials[2];
 console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);
 
 // 1 oak_door at layer 0
-expected = [1, 0];
-actual = materials["minecraft:oak_door"];
+expected = {sprite: "oak-door", name: "oak_door", amounts: [1, 0]};
+actual = materials[3];
 console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);
 
 // 2 oak_slab at layer 0
-expected = [2, 0];
-actual = materials["minecraft:oak_slab"];
+expected = {sprite: "oak-slab", name: "oak_slab", amounts: [2, 0]};
+actual = materials[4];
+console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);
+
+// 1 oak_log at layer 0
+expected = {sprite: "oak-log", name: "oak_log", amounts: [1, 0]};
+actual = materials[5];
 console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);

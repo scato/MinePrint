@@ -1,6 +1,6 @@
 import { lookupBlockstate } from './structure.js';
 
-function generateMaterial(blockstate) {
+function generateAmount(blockstate) {
         // these blockstates should be ignored
         if (blockstate.Name.match(/_bed$/) && blockstate.Properties.part === "head") {
             return [blockstate.Name, 0];
@@ -19,20 +19,28 @@ function generateMaterial(blockstate) {
         return [blockstate.Name, 1];
 }
 
+function generateMaterial(name, amounts) {
+    return {
+        sprite: name.replace("minecraft:", "").replaceAll("_", "-"),
+        name: name.replace("minecraft:", ""),
+        amounts: amounts
+    };
+}
+
 export function generateMaterials(size, blocks, palette) {
-    const materials = {};
+    const amountsByName = {};
     const height = size[1];
 
     for (let block of blocks) {
         const [x, y, z] = block.pos;
         const blockstate = lookupBlockstate(block, palette);
 
-        const [name, number] = generateMaterial(blockstate);
-        if (!materials.hasOwnProperty(name)) {
-            materials[name] = new Array(height).fill(0);
+        const [name, amount] = generateAmount(blockstate);
+        if (!amountsByName.hasOwnProperty(name)) {
+            amountsByName[name] = new Array(height).fill(0);
         }
-        materials[name][y] += number;
+        amountsByName[name][y] += amount;
     }
 
-    return materials;
+    return Object.keys(amountsByName).map((name) => generateMaterial(name, amountsByName[name]));
 }
