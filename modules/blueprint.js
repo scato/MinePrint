@@ -20,9 +20,6 @@ const RAIL_SUFFIX = {
 
 const ALTERNATIVE_NAMING = {
     "double-blackstone-slab": "blackstone-double-slab",
-    "cake-with-black-candle": "black-candle-cake",
-    "cake-with-blue-candle": "blue-candle-cake",
-    "cake-with-brown-candle": "brown-candle-cake",
     "copper-door-top": "copper-door",
     "copper-door-bottom": "copper-door",
     "damaged-anvil": "anvil",
@@ -49,6 +46,7 @@ const ALTERNATIVE_NAMING = {
     "redstone-wire": "redstone-dust",
     "skeleton-wall-skull": "skeleton-skull",
     "smooth-quartz": "smooth-quartz-block",
+    "spawner": "monster-spawner",
 };
 
 function generateCell(blockstate) {
@@ -66,11 +64,11 @@ function generateCell(blockstate) {
         sprite = "block-of-" + match[1].replace("_", "-");
     } else if (match = blockstate.Name.match(/^minecraft:(comparator|repeater)$/)) {
         sprite = "redstone-" + match[1];
-    } else if (match = blockstate.Name.match(/minecraft:(.*candle)_cake/)) {
+    } else if ((match = blockstate.Name.match(/^minecraft:(.*candle)_cake/)) && !blockstate.Name.match(/^minecraft:(black|blue|brown)_candle_cake$/)) {
         sprite = "cake-with-" + match[1].replaceAll("_", "-");
     }
 
-    if (blockstate.Name.match(/_bed$/)) {
+    if (blockstate.Name.match(/_bed$/) && blockstate.Name !== "minecraft:straw_bed") {
         sprite += BED_SUFFIX[blockstate.Properties.part];
     } else if (blockstate.Name.match(/_door$/)) {
         sprite += DOOR_SUFFIX[blockstate.Properties.half];
@@ -90,7 +88,7 @@ function generateCell(blockstate) {
         sprite = sprite.replace("wall-", "");
     } else if (blockstate.Name.match(/_wood$/)) {
         sprite = sprite.replace("-wood", "-log");
-    } else if (blockstate.Name.match(/^minecraft:(crimson_nylium|dirt_path|dried_kelp_block|grass_block|mycelium)$/)) {
+    } else if (blockstate.Name.match(/^minecraft:(crimson_nylium|dirt_path|dried_kelp_block|grass_block|mycelium|podzol)$/)) {
         sprite += "-top";
     }
 

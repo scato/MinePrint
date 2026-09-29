@@ -1,5 +1,6 @@
 import { generateLayers } from './blueprint.js';
 import { renderBlueprint } from './html.js';
+import { generateMaterials } from './materials.js';
 
 const size = [1, 2, 3];
 
@@ -127,17 +128,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            const width = 50;
-            const depth = 42;
+            const width = 40;
+            const depth = 10;
+            const skip = 40;
             const numStates = blockStates.length;
-            blockStates = blockStates.slice(0, width * depth);
-            console.log(`Showing ${blockStates.length} of ${numStates} blockstates`);
+            blockStates = blockStates.slice(width * skip, width * (skip + depth));
+            console.log(`Showing ${width * skip + 1} to ${width * skip + blockStates.length} of ${numStates} blockstates`);
 
             const size = [width, 1, depth];
             const blocks = blockStates.map((_, i) => ({pos: [i % width, 0, Math.floor(i / width)], state: i}));
             const palette = blockStates;
 
             const layers = generateLayers(size, blocks, palette, 0);
-            document.querySelector("#blueprint-test").innerHTML = renderBlueprint(layers);
+            const materials = generateMaterials(size, blocks, palette);
+            document.querySelector("#blueprint-test").innerHTML = renderBlueprint(layers, materials, {});
         });
 });
