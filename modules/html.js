@@ -1,3 +1,5 @@
+import { lookupMaterialName } from './materials.js';
+
 function renderCell(cell) {
     if (cell === null) {
         return `
@@ -38,7 +40,22 @@ function renderLayer(layer, number) {
     `;
 }
 
-export function renderBlueprint(layers) {
+function renderMaterial(material, languageFile) {
+    const src = `https://minecraft.wiki/images/BlockSprite_${material.sprite}.png`;
+    const total = material.amounts.reduce((p, c) => p + c, 0);
+    const caption = lookupMaterialName(material.name, languageFile);
+
+    return `<tr>
+        <td>
+            <img src="${src}" width="16" height="16">
+            ${caption}
+        </td>
+        <td>${total}</td>
+        ${material.amounts.map((amount) => `<td>${amount}</td>`).join("")}
+    </tr>`;
+}
+
+export function renderBlueprint(layers, materials, languageFile) {
     const numRows = layers[0].length;
     const numColumns = layers[0][0].length;
 
@@ -48,6 +65,19 @@ export function renderBlueprint(layers) {
             <div class="layered-blueprint" style="min-height:${numRows * 16}px;width:${numColumns * 16}px">
                 ${layers.map((layer, index) => renderLayer(layer, index + 1)).join("")}
             </div>
+            <h3>Materials</h3>
+            <table class="blueprint-materials">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Total</th>
+                        ${layers.map((_, index) => `<th>Layer ${index + 1}</th>`).join("")}
+                    </tr>
+                </thead>
+                <tbody>
+                    ${materials.map((material) => renderMaterial(material, languageFile)).join("")}
+                </tbody>
+            </table>
         </div>
     `;
 }

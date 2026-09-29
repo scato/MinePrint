@@ -1,4 +1,4 @@
-import { generateMaterials } from './materials.js';
+import { generateMaterials, lookupMaterialName } from './materials.js';
 
 const size = [3, 2, 3];
 
@@ -132,3 +132,11 @@ console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stri
 expected = {sprite: "oak-log", name: "oak_log", amounts: [1, 0]};
 actual = materials[5];
 console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);
+
+const languageFile = {
+    "block.minecraft.grass_block": "Grass Block",
+};
+
+expected = "Grass Block";
+actual = lookupMaterialName("grass_block", languageFile);
+console.assert(actual === expected, `"${actual}" === "${expected}"`);

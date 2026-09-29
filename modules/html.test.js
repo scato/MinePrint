@@ -55,6 +55,30 @@ let blocks = [
     ],
 ];
 
+const materials = [
+    {
+        sprite: "grass-block",
+        name: "grass_block",
+        amounts: [4, 0]
+    },
+    {
+        sprite: "red-bed",
+        name: "red_bed",
+        amounts: [0, 1]
+    },
+    {
+        sprite: "poppy",
+        name: "poppy",
+        amounts: [0, 1]
+    },
+];
+
+const languageFile = {
+    "block.minecraft.grass_block": "Grass Block",
+    "block.minecraft.red_bed": "Red bed",
+    "block.minecraft.poppy": "Poppy",
+};
+
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("html-test").innerHTML = renderBlueprint(blocks);
+    document.getElementById("html-test").innerHTML = renderBlueprint(blocks, materials, languageFile);
 });

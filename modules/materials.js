@@ -44,3 +44,7 @@ export function generateMaterials(size, blocks, palette) {
 
     return Object.keys(amountsByName).map((name) => generateMaterial(name, amountsByName[name]));
 }
+
+export function lookupMaterialName(name, languageFile) {
+    return languageFile[`block.minecraft.${name}`];
+}
