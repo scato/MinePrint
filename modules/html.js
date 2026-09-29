@@ -51,7 +51,7 @@ function renderMaterial(material, languageFile) {
             ${caption}
         </td>
         <td>${total}</td>
-        ${material.amounts.map((amount) => `<td>${amount}</td>`).join("")}
+        ${material.amounts.map((amount) => `<td>${amount === 0 ? "-" : amount}</td>`).join("")}
     </tr>`;
 }
 

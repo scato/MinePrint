@@ -3,6 +3,8 @@
     border: 1px solid #CCC;
     margin-bottom: 0.5em;
     padding: 0 0.5em;
+
+    font-size: 14px;
 }
 
 .layered-blueprint {
@@ -45,4 +47,22 @@
 
 .layered-blueprint-layer span {
     display: inline-block;
+}
+
+.blueprint-materials {
+    border: 1px solid #CCC;
+    border-collapse: collapse;
+}
+
+.blueprint-materials th {
+    background-color: #eaecf0;
+}
+
+.blueprint-materials th, .blueprint-materials td {
+    padding: 3px 6px;
+    border: 1px solid #CCC;
+}
+
+.blueprint-materials img {
+    vertical-align: middle;
 }
