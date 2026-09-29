@@ -46,5 +46,11 @@ export function generateMaterials(size, blocks, palette) {
 }
 
 export function lookupMaterialName(name, languageFile) {
-    return languageFile[`block.minecraft.${name}`];
+    const key = `block.minecraft.${name}`;
+
+    if (languageFile.hasOwnProperty(key)) {
+        return languageFile[`block.minecraft.${name}`];
+    } else {
+        return name.split("_").map((part) => part.substring(0, 1).toUpperCase() + part.substring(1)).join(" ");
+    }
 }

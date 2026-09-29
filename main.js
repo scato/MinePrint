@@ -1,7 +1,11 @@
+import { fetchLanguageFile } from './modules/assets.js';
 import { generateLayers } from './modules/blueprint.js';
 import { renderBlueprint} from './modules/html.js';
+import { generateMaterials } from './modules/materials.js';
 import { readNbt } from './modules/nbt.js';
 import { extractBlocks, extractPalette, extractSize } from './modules/structure.js';
+
+const languageFilePromise = fetchLanguageFile();
 
 function readFileAsArrayBuffer(file) {
     return new Promise((resolve, reject) => {
@@ -28,6 +32,23 @@ function unzipArrayBuffer(buffer) {
     return new Response(output).arrayBuffer();
 }
 
+function unzipResponse(response) {
+    const output = response.body.pipeThrough(new DecompressionStream("gzip"));
+
+    return new Response(output).arrayBuffer();
+}
+
+function renderHtmlFromBuffer(buffer, languageFile) {
+    const root = readNbt(new Uint8Array(buffer));
+    const size = extractSize(root);
+    const blocks = extractBlocks(root);
+    const palette = extractPalette(root);
+    const layers = generateLayers(size, blocks, palette, 1);
+    const materials = generateMaterials(size, blocks, palette);
+
+    return renderBlueprint(layers, materials, languageFile);
+}
+
 function initFileUpload(upload) {
     const start = document.querySelector("#start");
     const blueprint = document.querySelector("#blueprint");
@@ -35,21 +56,19 @@ function initFileUpload(upload) {
     const title = document.querySelector("#blueprint-title");
     const viewer = document.querySelector("#blueprint-viewer");
 
-    upload.addEventListener("input", () => {
+    upload.addEventListener("input", async () => {
         const file = upload.files[0];
 
         title.textContent = file.name.replace(".nbt", "");
 
-        readFileAsArrayBuffer(file)
-            .then(unzipArrayBuffer)
-            .then((buffer) => {
-                const root = readNbt(new Uint8Array(buffer));
-                const layers = generateLayers(extractSize(root), extractBlocks(root), extractPalette(root), 1);
+        const zippedBuffer = await readFileAsArrayBuffer(file);
+        const buffer = await unzipArrayBuffer(zippedBuffer);
+        const languageFile = await languageFilePromise;
 
-                viewer.innerHTML = renderBlueprint(layers);
-                start.style.display = "none";
-                blueprint.style.display = "initial";
-            });
+        viewer.innerHTML = renderHtmlFromBuffer(buffer, languageFile);
+
+        start.style.display = "none";
+        blueprint.style.display = "initial";
     });
 }
 
@@ -60,26 +79,19 @@ function initBrowse(anchor) {
     const title = document.querySelector("#blueprint-title");
     const viewer = document.querySelector("#blueprint-viewer");
 
-    anchor.addEventListener("click", () => {
+    anchor.addEventListener("click", async () => {
         const uri = "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/refs/heads/26.2/data/minecraft/structure/village/plains/houses/plains_small_house_1.nbt";
-        const example = fetch(uri);
-
+        
         title.textContent = uri.split("/").pop().replace(".nbt", "");
+        
+        const example = await fetch(uri);
+        const buffer = await unzipResponse(example);
+        const languageFile = await languageFilePromise;
 
-        example
-            .then(response => {
-                const nbt = response.body.pipeThrough(new DecompressionStream("gzip"));
-                
-                return new Response(nbt).arrayBuffer()
-            })
-            .then((buffer) => {
-                const root = readNbt(new Uint8Array(buffer));
-                const layers = generateLayers(extractSize(root), extractBlocks(root), extractPalette(root), 1);
+        viewer.innerHTML = renderHtmlFromBuffer(buffer, languageFile);
 
-                viewer.innerHTML = renderBlueprint(layers);
-                start.style.display = "none";
-                blueprint.style.display = "initial";
-            });
+        start.style.display = "none";
+        blueprint.style.display = "initial";
     });
 }
 

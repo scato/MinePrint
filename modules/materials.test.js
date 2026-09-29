@@ -140,3 +140,7 @@ const languageFile = {
 expected = "Grass Block";
 actual = lookupMaterialName("grass_block", languageFile);
 console.assert(actual === expected, `"${actual}" === "${expected}"`);
+
+expected = "Unknown Block";
+actual = lookupMaterialName("unknown_block", languageFile);
+console.assert(actual === expected, `"${actual}" === "${expected}"`);
