@@ -9,6 +9,10 @@ body {
 
 .main {
     min-width: 300px;
+    max-width: 100%;
+}
+
+.main > * {
     max-width: 1000px;
 }
 
