@@ -1,4 +1,4 @@
-import { lookupMaterialName } from './model/materials.js';
+import { lookupMaterialName } from '../model/materials.js';
 
 function renderCell(cell) {
     if (cell === null) {

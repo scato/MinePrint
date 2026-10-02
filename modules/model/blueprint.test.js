@@ -1,5 +1,5 @@
 import { generateLayers } from './blueprint.js';
-import { renderBlueprint } from '../html.js';
+import { renderBlueprint } from '../view/html.js';
 import { generateMaterials } from './materials.js';
 
 const size = [1, 2, 3];
