@@ -6,6 +6,8 @@ function generateAmount(blockstate) {
             return [blockstate.Name, 0];
         } else if (blockstate.Name.match(/_door$/) && blockstate.Properties.half === "upper") {
             return [blockstate.Name, 0];
+        } else if (blockstate.Name.match(/^minecraft:(lilac|large_fern|peony|pitcher_plant|rose_bush|small_dripleaf|sunflower|tall_grass|tall_seagrass)$/) && blockstate.Properties.half === "upper") {
+            return [blockstate.Name, 0];
         } else if (blockstate.Name.match(/(:|_)air$/)) {
             return [blockstate.Name, 0];
         } else if (blockstate.Name.match(/(attached_)?(melon|pumpkin)_stem$/)) {
@@ -24,8 +26,8 @@ function generateAmount(blockstate) {
         }
 
         // these blockstates should map to different block names
-        if (blockstate.Name.match(/_wall(_hanging_sign|_sign|_banner|_fan|_torch|_head)$/)) {
-            return [blockstate.Name.replace("_wall", ""), 1];
+        if (blockstate.Name.match(/(:|_)wall_(hanging_sign|sign|banner|fan|torch|head|skull)$/)) {
+            return [blockstate.Name.replace("wall_", ""), 1];
         } else if (blockstate.Name === "minecraft:bamboo_sapling") {
             return ["minecraft:bamboo", 1];
         } else if (blockstate.Name === "minecraft:big_dripleaf_stem") {
@@ -51,7 +53,7 @@ function generateMaterial(name, amounts) {
     sprite = sprite.replaceAll("_", "-");
 
     let match;
-    if (match = name.match(/^minecraft:(amethyst|bamboo|coal|copper|diamond|emerald|gold|iron|lapis|netherite|quartz|raw_copper|raw_gold|raw_iron|resin|redstone|stripped_bamboo)_block$/)) {
+    if (match = name.match(/^minecraft:(amethyst|bamboo|coal|copper|diamond|emerald|gold|iron|lapis|netherite|quartz|raw_copper|raw_gold|raw_iron|resin|redstone|stripped_bamboo|waxed_copper)_block$/)) {
         sprite = "block-of-" + match[1].replace("_", "-");
     } else if (match = name.match(/^minecraft:(comparator|repeater)$/)) {
         sprite = "redstone-" + match[1];
@@ -81,8 +83,26 @@ function generateMaterial(name, amounts) {
         sprite = "redstone-dust";
     } else if (name.match(/_shelf$/) && name !== "minecraft:poplar_shelf") {
         sprite += "-front";
-    } else if (name.match(/(crimson)_stem$/)) {
+    } else if (name === "minecraft:smooth_quartz") {
+        sprite = "smooth-quartz-block";
+    } else if (name === "minecraft:spawner") {
+        sprite = "monster-spawner";
+    } else if (name.match(/(crimson|warped)_stem$/)) {
         sprite = sprite.replace("-stem", "-hyphae");
+    } else if (name === "minecraft:target") {
+        sprite = "target-block";
+    } else if (name === "minecraft:test_block") {
+        sprite = "test-block-start";
+    } else if (name === "minecraft:torchflower_crop") {
+        sprite = "torchflower-crop-1";
+    } else if (name === "minecraft:vine") {
+        sprite = "vines";
+    } else if (name === "minecraft:water") {
+        sprite = "water-top";
+    } else if (name.match(/waxed_/)) {
+        sprite = sprite.replace("waxed-", "");
+    } else if (name === "minecraft:wheat") {
+        sprite = "wheat-crops";
     } else if (name.match(/_wood$/)) {
         sprite = sprite.replace("-wood", "-log");
     }

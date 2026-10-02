@@ -2,6 +2,7 @@ import { lookupBlockstate } from './structure.js';
 
 const BED_SUFFIX = {"foot": "-top-foot", "head": "-top-head"};
 const DOOR_SUFFIX = {"lower": "-bottom", "upper": "-top"};
+const LARGE_PLANT_SUFFIX = {"lower": "-bottom", "upper": ""};
 const LOG_SUFFIX = {"x": "", "y": "-top", "z": ""};
 const SLAB_PREFIX = {"bottom": "", "double": "double-", "top": ""};
 
@@ -45,8 +46,16 @@ const ALTERNATIVE_NAMING = {
     "poplar-shelf-front": "poplar-shelf",
     "redstone-wire": "redstone-dust",
     "skeleton-wall-skull": "skeleton-skull",
+    "wither-skeleton-wall-skull": "wither-skeleton-skull",
     "smooth-quartz": "smooth-quartz-block",
     "spawner": "monster-spawner",
+    "target": "target-block",
+    "test-block": "test-block-start",
+    "torchflower-crop": "torchflower-crop-1",
+    "vine": "vines",
+    "weathered-copper-door-bottom": "weathered-copper-door",
+    "weathered-copper-door-top": "weathered-copper-door",
+    "wheat": "wheat-crops",
 };
 
 function generateCell(blockstate) {
@@ -60,7 +69,7 @@ function generateCell(blockstate) {
     sprite = sprite.replaceAll("_", "-");
 
     let match;
-    if (match = blockstate.Name.match(/^minecraft:(amethyst|bamboo|coal|copper|diamond|emerald|gold|iron|lapis|netherite|quartz|raw_copper|raw_gold|raw_iron|resin|redstone|stripped_bamboo)_block$/)) {
+    if (match = blockstate.Name.match(/^minecraft:(amethyst|bamboo|coal|copper|diamond|emerald|gold|iron|lapis|netherite|quartz|raw_copper|raw_gold|raw_iron|resin|redstone|stripped_bamboo|waxed_copper)_block$/)) {
         sprite = "block-of-" + match[1].replace("_", "-");
     } else if (match = blockstate.Name.match(/^minecraft:(comparator|repeater)$/)) {
         sprite = "redstone-" + match[1];
@@ -72,9 +81,11 @@ function generateCell(blockstate) {
         sprite += BED_SUFFIX[blockstate.Properties.part];
     } else if (blockstate.Name.match(/_door$/)) {
         sprite += DOOR_SUFFIX[blockstate.Properties.half];
+    } else if (blockstate.Name === "minecraft:large_fern" || blockstate.Name === "minecraft:tall_grass" || blockstate.Name === "minecraft:tall_seagrass") {
+        sprite += LARGE_PLANT_SUFFIX[blockstate.Properties.half];
     } else if (blockstate.Name.match(/_fungus$/)) {
         sprite = sprite.replace("-fungus", "-fungi");
-    } else if (blockstate.Name.match(/_log$/) || blockstate.Name.match(/(crimson)_stem$/) || blockstate.Name === "minecraft:basalt" || blockstate.Name === "minecraft:bamboo_block" || blockstate.Name === "minecraft:hay_block" || blockstate.Name === "minecraft:polished_basalt" || blockstate.Name === "minecraft:stripped_bamboo_block") {
+    } else if (blockstate.Name.match(/_log$/) || blockstate.Name.match(/(crimson|warped)_stem$/) || blockstate.Name === "minecraft:basalt" || blockstate.Name === "minecraft:bamboo_block" || blockstate.Name === "minecraft:hay_block" || blockstate.Name === "minecraft:polished_basalt" || blockstate.Name === "minecraft:stripped_bamboo_block") {
         sprite += LOG_SUFFIX[blockstate.Properties.axis];
     } else if (blockstate.Name === "minecraft:rail") {
         sprite += RAIL_SUFFIX[blockstate.Properties.shape];
@@ -88,8 +99,12 @@ function generateCell(blockstate) {
         sprite = sprite.replace("wall-", "");
     } else if (blockstate.Name.match(/_wood$/)) {
         sprite = sprite.replace("-wood", "-log");
-    } else if (blockstate.Name.match(/^minecraft:(crimson_nylium|dirt_path|dried_kelp_block|grass_block|mycelium|podzol)$/)) {
+    } else if (blockstate.Name.match(/^minecraft:(crimson_nylium|dirt_path|dried_kelp_block|grass_block|mycelium|podzol|warped_nylium|water)$/)) {
         sprite += "-top";
+    }
+    
+    if (blockstate.Name.match(/^minecraft:waxed_/)) {
+        sprite = sprite.replace("waxed-", "");
     }
 
     if (blockstate.Name.match(/_bed$/)) {
@@ -169,7 +184,7 @@ function generateCell(blockstate) {
         return {sprite, blockstate, transform};
     }
 
-    if (blockstate.Name.match(/_log$/) || blockstate.Name.match(/(crimson)_stem$/) || blockstate.Name === "minecraft:basalt" || blockstate.Name === "minecraft:bamboo_block" || blockstate.Name === "minecraft:hay_block" || blockstate.Name === "minecraft:polished_basalt" || blockstate.Name === "minecraft:stripped_bamboo_block") {
+    if (blockstate.Name.match(/_log$/) || blockstate.Name.match(/(crimson|warped)_stem$/) || blockstate.Name === "minecraft:basalt" || blockstate.Name === "minecraft:bamboo_block" || blockstate.Name === "minecraft:hay_block" || blockstate.Name === "minecraft:polished_basalt" || blockstate.Name === "minecraft:stripped_bamboo_block") {
         if (blockstate.Properties.axis !== "y") {
             sprite = sprite.replace("-stem", "-hyphae");
         }

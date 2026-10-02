@@ -82,6 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else if (name.match(/_door$/)) {
                     blockStates.push({Properties: {half: "lower"}, Name: name});
                     blockStates.push({Properties: {half: "upper"}, Name: name});
+                } else if (name.match(/^minecraft:(lilac|large_fern|peony|pitcher_plant|rose_bush|small_dripleaf|sunflower|tall_grass|tall_seagrass)$/)) {
+                    blockStates.push({Properties: {half: "lower"}, Name: name});
+                    blockStates.push({Properties: {half: "upper"}, Name: name});
                 } else if (name.match(/(:|_)glass_pane$/)) {
                     blockStates.push({Properties: {north: "true", east: "false", south: "true", west: "false"}, Name: name});
                     blockStates.push({Properties: {north: "false", east: "true", south: "false", west: "true"}, Name: name});
@@ -90,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     blockStates.push({Properties: {facing: "north"}, Name: name});
                     blockStates.push({Properties: {facing: "west"}, Name: name});
                     blockStates.push({Properties: {facing: "south"}, Name: name});
-                } else if (name.match(/_log$/) || name.match(/(crimson)_stem$/) || name === "minecraft:bamboo_block" || name === "minecraft:basalt" || name === "minecraft:hay_block" || name === "minecraft:polished_basalt" || name === "minecraft:stripped_bamboo_block") {
+                } else if (name.match(/_log$/) || name.match(/(crimson|warped)_stem$/) || name === "minecraft:bamboo_block" || name === "minecraft:basalt" || name === "minecraft:hay_block" || name === "minecraft:polished_basalt" || name === "minecraft:stripped_bamboo_block") {
                     blockStates.push({Properties: {axis: "x"}, Name: name});
                     blockStates.push({Properties: {axis: "y"}, Name: name});
                     blockStates.push({Properties: {axis: "z"}, Name: name});
@@ -130,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const width = 40;
             const depth = 10;
-            const skip = 40;
+            const skip = 60;
             const numStates = blockStates.length;
             blockStates = blockStates.slice(width * skip, width * (skip + depth));
             console.log(`Showing ${width * skip + 1} to ${width * skip + blockStates.length} of ${numStates} blockstates`);
