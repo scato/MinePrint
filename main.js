@@ -1,9 +1,9 @@
 import { fetchLanguageFile } from './modules/assets.js';
-import { generateLayers } from './modules/blueprint.js';
+import { generateLayers } from './modules/model/blueprint.js';
 import { renderBlueprint} from './modules/html.js';
-import { generateMaterials } from './modules/materials.js';
-import { readNbt } from './modules/nbt.js';
-import { extractBlocks, extractPalette, extractSize } from './modules/structure.js';
+import { generateMaterials } from './modules/model/materials.js';
+import { readNbt } from './modules/model/nbt.js';
+import { extractBlocks, extractPalette, extractSize } from './modules/model/structure.js';
 
 const languageFilePromise = fetchLanguageFile();
 

@@ -1,6 +1,6 @@
-import './modules/blueprint.test.js';
+import './modules/model/blueprint.test.js';
+import './modules/model/materials.test.js';
+import './modules/model/nbt.test.js';
+import './modules/model/snbt.test.js';
+import './modules/model/structure.test.js';
 import './modules/html.test.js';
-import './modules/materials.test.js';
-import './modules/nbt.test.js';
-import './modules/snbt.test.js';
-import './modules/structure.test.js';
