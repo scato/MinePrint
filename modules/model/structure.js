@@ -48,7 +48,8 @@ export function extractBlocks(structureTag) {
 
 export function extractPalette(structureTag) {
     const blocksTag = extractTagByName(structureTag.payload, "palette");
-
+    
+    // TODO: 26.3 uses "id" instead of "Name" and "properties" instead of "Properties" :o
     return extractListItems(blocksTag.payload).map((item) => {
         const hasProperties = hasTagWithName(item, "Properties");
         return {

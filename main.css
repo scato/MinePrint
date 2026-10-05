@@ -39,7 +39,12 @@ label[for$="file-upload"] {
     cursor: pointer;
 }
 
-#start-browse {
+#start a {
+    text-decoration: none;
+    color: inherit;
+}
+
+#browse a {
     text-decoration: none;
     color: inherit;
 }

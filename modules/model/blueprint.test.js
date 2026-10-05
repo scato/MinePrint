@@ -53,14 +53,9 @@ console.assert(layers[0][3][1].sprite === "oak-log-top", `"${layers[0][3][1].spr
 document.addEventListener("DOMContentLoaded", () => {
     // get all block names from minecraft-assets
     fetch("https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/refs/heads/26.3/assets/minecraft/blockstates/_list.json")
-        .then((response) => {
-            return response.blob();
-        })
-        .then((blob) => {
-            return blob.text();
-        })
-        .then((text) => {
-            const files = JSON.parse(text).files;
+        .then((response) => response.json())
+        .then((data) => {
+            const files = data.files;
             const blockNames = files.map((file) => "minecraft:" + file.replace(".json", ""));
             
             let blockStates = new Array();

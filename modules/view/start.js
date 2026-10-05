@@ -23,15 +23,7 @@ function initBrowse(state, refreshApp) {
     const anchor = document.getElementById("start-browse");
 
     anchor.addEventListener("click", async () => {
-        const uri = "https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/refs/heads/26.2/data/minecraft/structure/village/plains/houses/plains_small_house_1.nbt";
-        
-        const zippedResponse = await fetch(uri);
-        const buffer = await unzipResponse(zippedResponse);
-        const structure = readNbt(new Uint8Array(buffer));
-
-        state.page = "blueprint";
-        state.title = uri.split("/").pop().replace(".nbt", "");
-        state.structure = structure;
+        state.page = "browse";
 
         refreshApp(state);
     });
