@@ -25,6 +25,7 @@ h1, h2 {
 .nav-icon {
     float: right;
     padding: 0 2px;
+    width: 20px;
 }
 
 svg {

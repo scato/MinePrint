@@ -10,9 +10,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         listeners: [],
     };
 
-    initBlueprint(state, refresh);
-    await initBrowse(state, refresh);
-    initStart(state, refresh);
+    await Promise.all([
+        initBlueprint(state, refresh),
+        initBrowse(state, refresh),
+        initStart(state, refresh)
+    ]);
 
     refresh(state);
 });

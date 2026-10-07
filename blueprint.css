@@ -1,3 +1,39 @@
+#blueprint-toolbar {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.blueprint-toolbar-left {
+    flex: 1 0 0;
+
+    display: flex;
+    justify-content: start;
+}
+
+.blueprint-toolbar-center {
+    flex: 1 0 0;
+
+    display: flex;
+    justify-content: center;
+}
+
+.blueprint-toolbar-right {
+    flex: 1 0 0;
+
+    display: flex;
+    justify-content: end;
+}
+
+.toolbar-icon {
+    display: block;
+    padding: 0 2px;
+    width: 20px;
+}
+
+.blueprint-toolbar-left .toolbar-icon {
+    float: left;
+}
+
 .blueprint {
     overflow-x: auto;
 

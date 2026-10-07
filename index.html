@@ -65,6 +65,20 @@
                 <h2>
                     <span id="blueprint-title"></span>
                 </h2>
+
+                <div id="blueprint-toolbar">
+                    <div class="blueprint-toolbar-left">
+                        <form action="javascript:;" class="toolbar-icon">
+                            <!-- no spaces between input and svg to prevent weird indentation -->
+                            <input id="blueprint-file-upload" type="file" name="upload"><label for="blueprint-file-upload"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M19 19H1v-2h18zM10.703 1l5.211 5.117-1.406 1.422L11 4v11H9V4L5.492 7.54 4.086 6.116 9.296 1z"></path></g></svg></label>
+                        </form>
+                        <a id="blueprint-browse" href="javascript:;" class="toolbar-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M11.414 4H19v14H1V2h8.414zM3 16h14V6h-6.414l-2-2H3z"></path></g></svg>
+                        </a>
+                    </div>
+                    <div class="blueprint-toolbar-center"></div>
+                    <div class="blueprint-toolbar-right"></div>
+                </div>
                 
                 <div id="blueprint-viewer"></div>
             </div>

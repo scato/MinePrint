@@ -32,7 +32,7 @@ function refresh(state) {
     }
 }
 
-export function init(state, refreshApp) {
+export async function init(state, refreshApp) {
     initFileUpload(state, refreshApp);
     initBrowse(state, refreshApp);
 

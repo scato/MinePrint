@@ -2,7 +2,40 @@ import { generateLayers } from '../model/blueprint.js';
 import { generateMaterials } from '../model/materials.js';
 import { extractBlocks, extractPalette, extractSize } from '../model/structure.js';
 import { fetchLanguageFile } from './assets.js';
+import { readStructureFromUpload } from './file.js';
 import { renderBlueprint } from './html.js';
+
+function initFileUpload(state, refreshApp) {
+    const upload = document.getElementById("blueprint-file-upload");
+
+    upload.addEventListener("input", async () => {
+        const [filename, structure] = await readStructureFromUpload(upload);
+
+        state.page = "blueprint";
+        state.title = filename.replace(".nbt", "");
+        state.structure = structure;
+
+        state.url = null;
+        location.hash = "#";
+
+        refreshApp(state);
+    });
+}
+
+function initBrowse(state, refreshApp) {
+    const anchor = document.getElementById("blueprint-browse");
+
+    anchor.addEventListener("click", async () => {
+        state.page = "browse";
+
+        if (state.url !== null) {
+            state.url = state.url.substring(0, state.url.lastIndexOf("/") + 1);
+            location.hash = `#${state.url}`;
+        }
+
+        refreshApp(state);
+    });
+}
 
 const languageFilePromise = fetchLanguageFile();
 
@@ -26,6 +59,9 @@ async function refresh(state) {
     }
 }
 
-export function init(state, refreshApp) {
+export async function init(state, refreshApp) {
+    initFileUpload(state, refreshApp);
+    initBrowse(state, refreshApp);
+
     state.listeners.push(refresh);
 }
