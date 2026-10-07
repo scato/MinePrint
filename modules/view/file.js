@@ -1,4 +1,4 @@
-import { readNbt } from '../model/nbt.js';
+import { readNbt, writeNbt } from '../model/nbt.js';
 
 function readFileAsArrayBuffer(file) {
     return new Promise((resolve, reject) => {
@@ -31,6 +31,19 @@ function unzipResponse(response) {
     return new Response(output).arrayBuffer();
 }
 
+function zipArrayBuffer(buffer) {
+    const input = new ReadableStream({
+        pull(controller) {
+            controller.enqueue(buffer);
+            controller.close();
+        }
+    });
+
+    const output = input.pipeThrough(new CompressionStream("gzip"));
+
+    return new Response(output).arrayBuffer();
+}
+
 export async function readStructureFromUpload(upload) {
         const file = upload.files[0];
 
@@ -47,4 +60,18 @@ export async function readStructureFromUrl(url) {
     const structure = readNbt(new Uint8Array(buffer));
 
     return [url.split("/").pop(), structure];
+}
+
+export async function writeStructureAsDownload(filename, structure) {
+    const buffer = writeNbt(structure).buffer;
+    const zippedBuffer = await zipArrayBuffer(buffer.transferToFixedLength());
+    const blob = new Blob([zippedBuffer], {type: "application/octet-stream"});
+    const url = URL.createObjectURL(blob);
+
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    anchor.click();
+
+    URL.revokeObjectURL(url);
 }

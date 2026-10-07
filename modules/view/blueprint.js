@@ -2,7 +2,7 @@ import { generateLayers } from '../model/blueprint.js';
 import { generateMaterials } from '../model/materials.js';
 import { extractBlocks, extractPalette, extractSize } from '../model/structure.js';
 import { fetchLanguageFile } from './assets.js';
-import { readStructureFromUpload } from './file.js';
+import { readStructureFromUpload, writeStructureAsDownload } from './file.js';
 import { renderBlueprint } from './html.js';
 
 function initFileUpload(state, refreshApp) {
@@ -37,6 +37,14 @@ function initBrowse(state, refreshApp) {
     });
 }
 
+function initDownload(state, refreshApp) {
+    const anchor = document.getElementById("blueprint-download");
+
+    anchor.addEventListener("click", async () => {
+        await writeStructureAsDownload(state.title + ".nbt", state.structure);
+    });
+}
+
 const languageFilePromise = fetchLanguageFile();
 
 async function refresh(state) {
@@ -62,6 +70,8 @@ async function refresh(state) {
 export async function init(state, refreshApp) {
     initFileUpload(state, refreshApp);
     initBrowse(state, refreshApp);
+
+    initDownload(state, refreshApp);
 
     state.listeners.push(refresh);
 }
