@@ -24,6 +24,7 @@ h1, h2 {
 
 .nav-icon {
     float: right;
+    padding: 0 2px;
 }
 
 svg {
@@ -39,12 +40,7 @@ label[for$="file-upload"] {
     cursor: pointer;
 }
 
-#start a {
-    text-decoration: none;
-    color: inherit;
-}
-
-#browse a {
+#start a, #browse a {
     text-decoration: none;
     color: inherit;
 }
