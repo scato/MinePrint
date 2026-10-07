@@ -1,4 +1,6 @@
-export function readFileAsArrayBuffer(file) {
+import { readNbt } from '../model/nbt.js';
+
+function readFileAsArrayBuffer(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
 
@@ -10,7 +12,7 @@ export function readFileAsArrayBuffer(file) {
     });
 }
 
-export function unzipArrayBuffer(buffer) {
+function unzipArrayBuffer(buffer) {
     const input = new ReadableStream({
         pull(controller) {
             controller.enqueue(buffer);
@@ -23,8 +25,26 @@ export function unzipArrayBuffer(buffer) {
     return new Response(output).arrayBuffer();
 }
 
-export function unzipResponse(response) {
+function unzipResponse(response) {
     const output = response.body.pipeThrough(new DecompressionStream("gzip"));
 
     return new Response(output).arrayBuffer();
+}
+
+export async function readStructureFromUpload(upload) {
+        const file = upload.files[0];
+
+        const zippedBuffer = await readFileAsArrayBuffer(file);
+        const buffer = await unzipArrayBuffer(zippedBuffer);
+        const structure = readNbt(new Uint8Array(buffer));
+        
+        return [file.name, structure];
+}
+
+export async function readStructureFromUrl(url) {
+    const zippedResponse = await fetch(url);
+    const buffer = await unzipResponse(zippedResponse);
+    const structure = readNbt(new Uint8Array(buffer));
+
+    return [url.split("/").pop(), structure];
 }

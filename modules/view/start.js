@@ -1,18 +1,13 @@
-import { readNbt } from '../model/nbt.js';
-import { readFileAsArrayBuffer, unzipArrayBuffer, unzipResponse } from './file.js';
+import { readStructureFromUpload } from './file.js';
 
 function initFileUpload(state, refreshApp) {
     const upload = document.getElementById("start-file-upload");
 
     upload.addEventListener("input", async () => {
-        const file = upload.files[0];
-
-        const zippedBuffer = await readFileAsArrayBuffer(file);
-        const buffer = await unzipArrayBuffer(zippedBuffer);
-        const structure = readNbt(new Uint8Array(buffer));
+        const [filename, structure] = await readStructureFromUpload(upload);
 
         state.page = "blueprint";
-        state.title = file.name.replace(".nbt", "");
+        state.title = filename.replace(".nbt", "");
         state.structure = structure;
 
         refreshApp(state);

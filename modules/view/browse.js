@@ -1,6 +1,6 @@
 import { readNbt } from '../model/nbt.js';
 import { STRUCTURES_ROOT } from './assets.js';
-import { readFileAsArrayBuffer, unzipArrayBuffer, unzipResponse } from './file.js';
+import { readStructureFromUrl } from './file.js';
 
 async function updateUrl(state) {
     const hash = location.hash;
@@ -13,12 +13,10 @@ async function updateUrl(state) {
         if (state.url.endsWith("/")) {
             state.page = "browse";
         } else {
-            const zippedResponse = await fetch(state.url);
-            const buffer = await unzipResponse(zippedResponse);
-            const structure = readNbt(new Uint8Array(buffer));
+            const [filename, structure] = await readStructureFromUrl(state.url);
 
             state.page = "blueprint";
-            state.title = state.url.split("/").pop().replace(".nbt", "");
+            state.title = filename.replace(".nbt", "");
             state.structure = structure;
         }
     }
