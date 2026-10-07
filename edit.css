@@ -1,0 +1,12 @@
+#edit form {
+    height: 30px;
+}
+
+#edit input {
+    width: 600px;
+}
+
+#edit textarea {
+    width: 640px;
+    height: 480px;
+}

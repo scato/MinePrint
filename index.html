@@ -5,6 +5,7 @@
         <link rel="icon" href="data:">
         <link rel="stylesheet" href="main.css">
         <link rel="stylesheet" href="blueprint.css">
+        <link rel="stylesheet" href="edit.css">
         <script src="main.js" type="module"></script>
         <meta name="viewport" content="width=device-width">
     </head>
@@ -78,6 +79,9 @@
                     </div>
                     <div class="blueprint-toolbar-center"></div>
                     <div class="blueprint-toolbar-right">
+                        <a id="blueprint-edit" href="javascript:;" class="toolbar-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="m15.4.4 4.2 4.2-3.2 3.2-4.2-4.2zM10.8 5 15 9.2l-8.6 8.6-4.5 1.5-1.2-1.2 1.5-4.5z"></path></g></svg>
+                        </a>
                         <a id="blueprint-download" href="javascript:;" class="toolbar-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M19 19H1v-2h18zm-8-7.104 3.5-3.5 1.414 1.414-5.207 5.208H9.293L4.086 9.81 5.5 8.396l3.5 3.5V1h2z"></path></g></svg>
                         </a>
@@ -85,6 +89,17 @@
                 </div>
                 
                 <div id="blueprint-viewer"></div>
+            </div>
+
+            <div id="edit" style="display: none">
+                <form action="javascript:;">
+                    <input id="edit-title" type="text" name="title"></span>
+                    <a id="edit-blueprint" href="javascript:;" class="nav-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M2.5 2.5h3v3h-3zm0 6h3v3h-3zm0 6h3v3h-3zm6-12h3v3h-3zm0 6h3v3h-3zm0 6h3v3h-3zm6-12h3v3h-3zm0 6h3v3h-3zm0 6h3v3h-3z"></path></g></svg>
+                    </a>
+                </form>
+
+                <textarea id="edit-source"></textarea>
             </div>
         </div>
     </body>

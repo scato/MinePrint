@@ -37,6 +37,19 @@ function initBrowse(state, refreshApp) {
     });
 }
 
+function initEdit(state, refreshApp) {
+    const anchor = document.getElementById("blueprint-edit");
+
+    anchor.addEventListener("click", async () => {
+        state.page = "edit";
+
+        state.url = null;
+        location.hash = "#";
+
+        refreshApp(state);
+    });
+}
+
 function initDownload(state, refreshApp) {
     const anchor = document.getElementById("blueprint-download");
 
@@ -71,6 +84,7 @@ export async function init(state, refreshApp) {
     initFileUpload(state, refreshApp);
     initBrowse(state, refreshApp);
 
+    initEdit(state, refreshApp);
     initDownload(state, refreshApp);
 
     state.listeners.push(refresh);
