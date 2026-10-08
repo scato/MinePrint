@@ -60,6 +60,10 @@ export function renderBlueprint(layers, materials, languageFile) {
     const numColumns = layers[0][0].length;
 
     try {
+        if (layers.length > 100 || numRows > 100 || numColumns > 100) {
+            throw new Error("This structure is too large to render");
+        }
+    
         return `
             <div class="blueprint">
                 <h3>Blueprint</h3>
