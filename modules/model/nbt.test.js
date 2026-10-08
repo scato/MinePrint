@@ -141,7 +141,7 @@ assertOutputFromTag(
 );
 
 assertOutputFromTag(
-    "0a0003666f6f0100036261722a",
+    "0a0003666f6f0100036261722a00",
     {type: 10, name: "foo", payload: [{type: 1, name: "bar", payload: 42}]}
 );
 
@@ -163,6 +163,6 @@ assertOutputFromTag(
 
 // nested compound
 assertOutputFromTag(
-    "0a0003666f6f0a000362617201000362617a2a00",
+    "0a0003666f6f0a000362617201000362617a2a0000",
     {type: 10, name: "foo", payload: [{type: 10, name: "bar", payload: [{type: 1, name: "baz", payload: 42}]}]}
 );

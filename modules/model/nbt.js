@@ -220,10 +220,14 @@ export function writeNbt(tag) {
 
     const offset = writeNbtTag(tag, output, 0);
 
-    if (tag.type === 10) {
-        // trim trailing TAG_End
-        output.resize(offset - 1);
-    }
+    // TODO: looks like there's a bug in Shulkr.com
+    // I'm pretty sure the Java assets do not include this last byte
+    // but Shulkr.com produces an error if you trim it
+
+    // if (tag.type === 10) {
+    //     // trim trailing TAG_End
+    //     output.resize(offset - 1);
+    // }
 
     return new Uint8Array(output);
 }
