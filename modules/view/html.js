@@ -59,25 +59,35 @@ export function renderBlueprint(layers, materials, languageFile) {
     const numRows = layers[0].length;
     const numColumns = layers[0][0].length;
 
-    return `
-        <div class="blueprint">
-            <h3>Blueprint</h3>
-            <div class="layered-blueprint" style="min-height:${numRows * 16}px;width:${numColumns * 16}px">
-                ${layers.map((layer, index) => renderLayer(layer, index + 1)).join("")}
+    try {
+        return `
+            <div class="blueprint">
+                <h3>Blueprint</h3>
+                <div class="layered-blueprint" style="min-height:${numRows * 16}px;width:${numColumns * 16}px">
+                    ${layers.map((layer, index) => renderLayer(layer, index + 1)).join("")}
+                </div>
+                <h3>Materials</h3>
+                <table class="blueprint-materials">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Total</th>
+                            ${layers.map((_, index) => `<th>Layer ${index + 1}</th>`).join("")}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${materials.map((material) => renderMaterial(material, languageFile)).join("")}
+                    </tbody>
+                </table>
             </div>
-            <h3>Materials</h3>
-            <table class="blueprint-materials">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Total</th>
-                        ${layers.map((_, index) => `<th>Layer ${index + 1}</th>`).join("")}
-                    </tr>
-                </thead>
-                <tbody>
-                    ${materials.map((material) => renderMaterial(material, languageFile)).join("")}
-                </tbody>
-            </table>
-        </div>
-    `;
+        `;
+    } catch (e) {
+        return `
+            <div class="blueprint">
+                <h3>Error</h3>
+
+                <p>Failed to render blueprint: ${e.message}</p>
+            </div>
+        `;
+    }
 }
