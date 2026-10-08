@@ -45,3 +45,7 @@ label[for$="file-upload"] {
     text-decoration: none;
     color: inherit;
 }
+
+#browse-list > div {
+    margin: 5px 0;
+}

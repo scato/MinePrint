@@ -39,6 +39,10 @@ function renderRepoList() {
     html += repoTemplate.outerHTML
         .replace("$url", `${STRUCTURES_ROOT}/`)
         .replace("$name", "InventivetalentDev/minecraft-assets");
+
+    html += repoTemplate.outerHTML
+        .replace("$url", "data/scato/structure/")
+        .replace("$name", "scato/MinePrint");
     
     return html;
 }
