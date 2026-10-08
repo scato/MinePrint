@@ -1,4 +1,20 @@
 import { readSnbt, writeSnbt } from '../model/snbt.js';
+import { trim } from '../model/tools.js';
+
+function initClean(state, refreshApp) {
+    const anchor = document.getElementById("edit-clean");
+
+    anchor.addEventListener("click", () => {
+        const snbt = document.getElementById("edit-source").value;
+        const structure = readSnbt(snbt);
+
+        trim(structure);
+
+        state.structure = structure;
+
+        refreshApp(state);
+    });
+}
 
 function initBlueprint(state, refreshApp) {
     const anchor = document.getElementById("edit-blueprint");
@@ -30,6 +46,7 @@ function refresh(state, refreshApp) {
 }
 
 export async function init(state, refreshApp) {
+    initClean(state, refreshApp);
     initBlueprint(state, refreshApp);
 
     state.listeners.push(refresh);

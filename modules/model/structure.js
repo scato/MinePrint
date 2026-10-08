@@ -18,6 +18,10 @@ function extractListItems(listPayload) {
     return listPayload[1];
 }
 
+function alterListItems(listPayload, items) {
+    listPayload[1] = items;
+}
+
 function extractCompoundProperties(compoundPayload) {
     const properties = {};
     for (let tag of compoundPayload) {
@@ -85,4 +89,27 @@ export function lookupBlockstate(block, palette) {
         return parseBlockstate(block.nbt.final_state);
     }
     return blockstate;
+}
+
+export function alterSize(structureTag, size) {
+    const sizeTag = extractTagByName(structureTag.payload, "size");
+
+    alterListItems(sizeTag.payload, size);
+}
+
+export function translateBlocks(structureTag, delta) {
+    const blocksTag = extractTagByName(structureTag.payload, "blocks");
+
+    return extractListItems(blocksTag.payload).forEach((item) => {
+        const hasNbt = hasTagWithName(item, "nbt");
+        const posTag = extractTagByName(item, "pos");
+
+        if (posTag.type === 9) {
+            const pos = extractListItems(posTag.payload);
+            alterListItems(posTag.payload, [pos[0] + delta[0], pos[1] + delta[1], pos[2] + delta[2]]);
+        } else {
+            const pos = posTag.payload;
+            posTag.payload = [pos[0] + delta[0], pos[1] + delta[1], pos[2] + delta[2]];
+        }
+    });
 }

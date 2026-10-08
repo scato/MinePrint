@@ -1,5 +1,5 @@
 import { readSnbt } from './snbt.js';
-import { extractSize, extractBlocks, extractPalette, lookupBlockstate } from './structure.js';
+import { extractSize, extractBlocks, extractPalette, lookupBlockstate, alterSize, translateBlocks } from './structure.js';
 
 const example = `
 "": {
@@ -103,4 +103,43 @@ block = {"nbt": {"final_state": "minecraft:oak_log[axis=x]"}, "state": 3};
 expected = {"Properties": {"axis": "x"}, "Name": "minecraft:oak_log"};
 actual = lookupBlockstate(block, palette);
 
+console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);
+
+const example2 = `
+"": {
+    "size": [3i, 3i, 3i],
+    "entities": [],
+    "blocks": [
+        {
+            "pos": [1i, 1i, 1i],
+            "state": 0i
+        }
+    ],
+    "palette": [
+        {
+            "Properties": {
+                "snowy": "false"
+            },
+            "Name": "minecraft:grass_block"
+        }
+    ]
+}
+`;
+
+const structure2 = readSnbt(example2);
+
+alterSize(structure2, [1, 1, 1]);
+translateBlocks(structure2, [-1, -1, -1]);
+
+expected = [1, 1, 1];
+actual = extractSize(structure2);
+console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);
+
+expected = [
+    {
+        "pos": [0, 0, 0],
+        "state": 0
+    }
+];
+actual = extractBlocks(structure2);
 console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);
