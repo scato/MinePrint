@@ -84,13 +84,15 @@ function testProperties(properties, condition) {
 }
 
 export function lookupParts(blockstate, randomNumber, blockstateFile) {
-    if (!blockstateFile.hasOwnProperty(blockstate.Name)) {
-        console.log(`blockstate not found for ${blockstate.Name}`);
+    const name = blockstate.Name.replace("minecraft:", "");
+
+    if (!blockstateFile.hasOwnProperty(name)) {
+        console.log(`blockstate not found for ${name}`);
 
         return null;
     }
 
-    const definition = blockstateFile[blockstate.Name];
+    const definition = blockstateFile[name];
 
     if (definition.hasOwnProperty("variants")) {
         let variant = null;

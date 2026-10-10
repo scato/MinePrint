@@ -1,8 +1,10 @@
 import { createScene } from './render.js';
 
 async function renderBlock(blockstate, aspectRatio, engine) {
-    const size = [2, 2, 2];
-    const blocks = [{pos: [0, 0, 0], state: 0}, {pos: [1, 0, 0], state: 0}, {pos: [1, 0, 1], state: 0}, {pos: [1, 1, 0], state: 0}];
+    // const size = [2, 2, 2];
+    // const blocks = [{pos: [0, 0, 0], state: 0}, {pos: [1, 0, 0], state: 0}, {pos: [1, 0, 1], state: 0}, {pos: [1, 1, 0], state: 0}];
+    const size = [1, 1, 1];
+    const blocks = [{pos: [0, 0, 0], state: 0}];
     const palette = [blockstate];
 
     const scene = await createScene(size, blocks, palette, aspectRatio);
@@ -20,9 +22,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let example = `
         {
-            "Name": "anvil",
+            "Name": "minecraft:mangrove_propagule",
             "Properties": {
-                "facing": "east"
+                "age": "4",
+                "hanging": "true"
             }
         }
     `;

@@ -108,13 +108,13 @@ let blockstate1, blockstate2, blockstate3;
 let expected1, expected2, expected3;
 let actual1, actual2, actual3;
 
-blockstate = {Name: "one_variant"};
+blockstate = {Name: "minecraft:one_variant"};
 expected = [{"model": "a"}];
 actual = lookupParts(blockstate, 0, blockStateFile);
 
 assertDeepEqual(expected, actual);
 
-blockstate = {Name: "random_variant"};
+blockstate = {Name: "minecraft:random_variant"};
 expected1 = [{"model": "b1"}];
 expected2 = [{"model": "b2"}];
 expected3 = [{"model": "b1"}];
@@ -126,9 +126,9 @@ assertDeepEqual(expected1, actual1);
 assertDeepEqual(expected2, actual2);
 assertDeepEqual(expected3, actual3);
 
-blockstate1 = {Name: "shorthand_variants", Properties: {"x": 1, "y": 1}};
-blockstate2 = {Name: "shorthand_variants", Properties: {"x": 2, "y": 1}};
-blockstate3 = {Name: "shorthand_variants", Properties: {"x": 1, "y": 2}};
+blockstate1 = {Name: "minecraft:shorthand_variants", Properties: {"x": 1, "y": 1}};
+blockstate2 = {Name: "minecraft:shorthand_variants", Properties: {"x": 2, "y": 1}};
+blockstate3 = {Name: "minecraft:shorthand_variants", Properties: {"x": 1, "y": 2}};
 expected1 = [{"model": "c11"}];
 expected2 = [{"model": "c21"}];
 expected3 = [{"model": "c12"}];
@@ -140,9 +140,9 @@ assertDeepEqual(expected1, actual1);
 assertDeepEqual(expected2, actual2);
 assertDeepEqual(expected3, actual3);
 
-blockstate1 = {Name: "simple_multipart", Properties: {"x": 1, "y": 1}};
-blockstate2 = {Name: "simple_multipart", Properties: {"x": 2, "y": 1}};
-blockstate3 = {Name: "simple_multipart", Properties: {"x": 1, "y": 2}};
+blockstate1 = {Name: "minecraft:simple_multipart", Properties: {"x": 1, "y": 1}};
+blockstate2 = {Name: "minecraft:simple_multipart", Properties: {"x": 2, "y": 1}};
+blockstate3 = {Name: "minecraft:simple_multipart", Properties: {"x": 1, "y": 2}};
 expected1 = [{"model": "d0"}, {"model": "d1"}];
 expected2 = [{"model": "d0"}];
 expected3 = [{"model": "d0"}, {"model": "d1"}, {"model": "d2"}];
@@ -154,9 +154,9 @@ assertDeepEqual(expected1, actual1);
 assertDeepEqual(expected2, actual2);
 assertDeepEqual(expected3, actual3);
 
-blockstate1 = {Name: "complex_multipart", Properties: {"x": 1, "y": 1}};
-blockstate2 = {Name: "complex_multipart", Properties: {"x": 2, "y": 1}};
-blockstate3 = {Name: "complex_multipart", Properties: {"x": 1, "y": 2}};
+blockstate1 = {Name: "minecraft:complex_multipart", Properties: {"x": 1, "y": 1}};
+blockstate2 = {Name: "minecraft:complex_multipart", Properties: {"x": 2, "y": 1}};
+blockstate3 = {Name: "minecraft:complex_multipart", Properties: {"x": 1, "y": 2}};
 expected1 = [{"model": "d0"}, {"model": "d1"}];
 expected2 = [{"model": "d0"}, {"model": "d2"}];
 expected3 = [{"model": "d0"}, {"model": "d2"}];

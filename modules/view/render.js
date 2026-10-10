@@ -99,8 +99,22 @@ function createSide(element, direction, scene) {
     }
 
     vertexData.indices = [0, 1, 2, 2, 3, 0];
-
     vertexData.applyToMesh(side);
+
+    if (element.hasOwnProperty("rotation")) {
+        const origin = new BABYLON.Vector3(
+            element.rotation.origin[0] / 16 - 0.5,
+            element.rotation.origin[1] / 16 - 0.5,
+            element.rotation.origin[2] / 16 - 0.5
+        );
+
+        side.translate(origin, 1);
+        side.rotate(
+            BABYLON.Axis[element.rotation.axis.toUpperCase()],
+            element.rotation.angle / 180 * Math.PI
+        );
+        side.translate(origin, -1);
+    }
 
     return side;
 }
@@ -123,13 +137,13 @@ async function createMesh(blockstate, randomNumber, scene) {
             for (let direction of Object.keys(element.faces)) {
                 const side = createSide(element, direction, scene);
 
-                if (part.hasOwnProperty("x")) {
-                    side.rotation.x = part.x / 180 * Math.PI;
+                if (part.hasOwnProperty("y")) {
+                    side.rotate(BABYLON.Axis.Y, -part.y / 180 * Math.PI);
                 }
 
-                if (part.hasOwnProperty("y")) {
-                    side.rotation.y = part.y / 180 * Math.PI;
-                }
+                if (part.hasOwnProperty("x")) {
+                    side.rotate(BABYLON.Axis.X, -part.x / 180 * Math.PI);
+                }    
 
                 sides.push(side);
             }
