@@ -65,6 +65,7 @@ function createTexture(id, scene) {
         };
         
         texture = new BABYLON.Texture(url, scene, options);
+        texture.hasAlpha = true;
     });
 }
 
@@ -73,6 +74,20 @@ async function createMaterial(face, textures, scene) {
     const texture = lookupTexture(face.texture, textures);
 
     material.diffuseTexture = await createTexture(texture, scene);
+
+    if (face.hasOwnProperty("rotation")) {
+        // TODO: maybe we have to rotate the texture as well as the uvs...
+        // material.diffuseTexture = material.diffuseTexture.clone();
+        // if (face.rotation === 90) {
+        //     material.diffuseTexture.uOffset = -1 * material.diffuseTexture.uScale;
+        //     // material.diffuseTexture.vOffset = -1 * material.diffuseTexture.uScale;
+        // }
+        // if (face.rotation === 180) {
+        //     material.diffuseTexture.uOffset = -1 * material.diffuseTexture.uScale;
+        //     material.diffuseTexture.vOffset = -1 * material.diffuseTexture.uScale;
+        // }
+        // material.diffuseTexture.wAng = face.rotation / 180 * Math.PI;
+    }
 
     return material;
 }
@@ -136,21 +151,39 @@ async function createSide(element, direction, textures, scene) {
             break;
     }
 
+    let uvs;
     if (face.hasOwnProperty("uv")) {
-        vertexData.uvs = [
-            face.uv[0], face.uv[1],
-            face.uv[0], face.uv[3],
-            face.uv[2], face.uv[3],
-            face.uv[2], face.uv[1],
+        uvs = [
+            new BABYLON.Vector2(face.uv[0], face.uv[1]),
+            new BABYLON.Vector2(face.uv[2], face.uv[3]),
         ];
     } else {
-        vertexData.uvs = [
-            0, 0,
-            16, 0,
-            16, 16,
-            0, 16,
+        uvs = [
+            new BABYLON.Vector2(0, 0),
+            new BABYLON.Vector2(16, 16),
         ];
     }
+
+    if (face.hasOwnProperty("rotation")) {
+        // TODO: not sure if rotating the uvs is enough, but it looks better than before
+        const center = uvs[0].add(uvs[1]).scale(0.5);
+        
+        uvs[0] = uvs[0]
+            .subtract(center)
+            .rotate(-face.rotation / 180 * Math.PI)
+            .add(center);
+        uvs[1] = uvs[1]
+            .subtract(center)
+            .rotate(-face.rotation / 180 * Math.PI)
+            .add(center);
+    }
+
+    vertexData.uvs = [
+        uvs[0].x, uvs[0].y,
+        uvs[1].x, uvs[0].y,
+        uvs[1].x, uvs[1].y,
+        uvs[0].x, uvs[1].y,
+    ];
 
     vertexData.indices = [0, 1, 2, 3, 0, 2];
     vertexData.applyToMesh(side);
