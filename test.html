@@ -5,6 +5,7 @@
         <link rel="icon" href="data:">
         <link rel="stylesheet" href="./main.css">
         <link rel="stylesheet" href="./blueprint.css">
+        <script src="./babylon.js" type="module"></script>
         <script src="./test.js" type="module"></script>
         <meta name="viewport" content="width=device-width">
     </head>
@@ -15,7 +16,11 @@
             <p>Open developer console to see unit test results.</p>
 
             <div id="html-test"></div>
-            <div id="blueprint-test"></div>
+            <div id="blueprint-test" style="display: none"></div>
+            <div id="render-test" style="background-color: white; padding: 5px">
+                <textarea style="width: 300px; height: 250px;"></textarea>
+                <canvas width="300" height="250" style="border: 1px solid #c8ccd1"></canvas>
+            </div>
         </div>
     </body>
 </html>
