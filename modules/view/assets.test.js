@@ -1,4 +1,4 @@
-import { lookupModel, lookupParts } from './assets.js';
+import { lookupModel, lookupParts, lookupTexture } from './assets.js';
 
 function assertDeepEqual(expected, actual) {
     console.assert(JSON.stringify(actual) === JSON.stringify(expected), `${JSON.stringify(actual)} === ${JSON.stringify(expected)}`);
@@ -240,3 +240,16 @@ actual = lookupModel("minecraft:block/complex_model", modelFile);
 
 assertDeepEqual(expected1, actual.elements);
 assertDeepEqual(expected2, actual.textures);
+
+const textures = {
+    "particle": "#top",
+    "top": "block/chiseled_bookshelf_top"
+};
+
+expected = "block/chiseled_bookshelf_top";
+actual = lookupTexture("#top", textures);
+assertDeepEqual(expected, actual);
+
+expected = "block/chiseled_bookshelf_top";
+actual = lookupTexture("#particle", textures);
+assertDeepEqual(expected, actual);

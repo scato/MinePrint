@@ -1,5 +1,5 @@
 import { lookupBlockstate } from '../model/structure.js';
-import { fetchBlockStateFile, fetchModelFile, lookupParts, lookupModel } from './assets.js';
+import { fetchBlockStateFile, fetchModelFile, lookupParts, lookupModel, TEXTURES_ROOT, lookupTexture } from './assets.js';
 
 const blockStateFilePromise = fetchBlockStateFile();
 const modelFilePromise = fetchModelFile();
@@ -11,7 +11,7 @@ function nextRandomNumber(randomNumber) {
 
 function createCamera(size, aspectRatio, scene) {
     const target = new BABYLON.Vector3(size[0] / 2, size[1] / 2, size[2] / 2);
-    const position = target.add(new BABYLON.Vector3(-2, Math.sin(60 / 180 * Math.PI) * 2, 2));
+    const position = target.add(new BABYLON.Vector3(2, Math.sin(60 / 180 * Math.PI) * 2, 2));
 
     const camera = new BABYLON.FreeCamera("camera", position, scene);
     camera.setTarget(target);
@@ -35,12 +35,50 @@ function createCamera(size, aspectRatio, scene) {
 }
 
 function createLight(scene) {
-    const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(-2, 3, 1), scene);
+    const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 3, 2), scene);
 
     return light;
 }
 
-function createSide(element, direction, scene) {
+function createTexture(id, scene) {
+    return new Promise((resolve, reject) => {
+        id = id.replace("minecraft:", "");
+
+        const url = `${TEXTURES_ROOT}/${id}.png`;
+
+        for (let t of scene.textures) {
+            if (t.url === url) {
+                resolve(t);
+            }
+        }
+
+        const options = {samplingMode: BABYLON.Texture.NEAREST_SAMPLINGMODE, invertY: false};
+        let texture;
+
+        options.onLoad = () => {
+            const size = texture.getSize();
+
+            texture.uScale = 1 / size.width;
+            texture.vScale = 1 / size.height;
+
+            resolve(texture);
+        };
+        
+        texture = new BABYLON.Texture(url, scene, options);
+    });
+}
+
+async function createMaterial(face, textures, scene) {
+    const material = new BABYLON.StandardMaterial("mat", scene);
+    const texture = lookupTexture(face.texture, textures);
+
+    material.diffuseTexture = await createTexture(texture, scene);
+
+    return material;
+}
+
+async function createSide(element, direction, textures, scene) {
+    const face = element.faces[direction];
     const side = new BABYLON.Mesh(direction, scene);
     const vertexData = new BABYLON.VertexData();
 
@@ -58,48 +96,66 @@ function createSide(element, direction, scene) {
             break;
         case "down":
             vertexData.positions = [
-                from[0], from[1], from[2],
                 from[0], from[1], to[2],
                 to[0], from[1], to[2],
                 to[0], from[1], from[2],
+                from[0], from[1], from[2],
             ];
             break;
         case "north":
             vertexData.positions = [
-                from[0], from[1], from[2],
-                to[0], from[1], from[2],
                 to[0], to[1], from[2],
                 from[0], to[1], from[2],
+                from[0], from[1], from[2],
+                to[0], from[1], from[2],
             ];
             break;
         case "south":
             vertexData.positions = [
-                from[0], from[1], to[2],
                 from[0], to[1], to[2],
                 to[0], to[1], to[2],
                 to[0], from[1], to[2],
+                from[0], from[1], to[2],
             ];
             break;
         case "east":
             vertexData.positions = [
-                to[0], from[1], from[2],
-                to[0], from[1], to[2],
                 to[0], to[1], to[2],
                 to[0], to[1], from[2],
+                to[0], from[1], from[2],
+                to[0], from[1], to[2],
             ];
             break;
         case "west":
             vertexData.positions = [
-                from[0], from[1], from[2],
                 from[0], to[1], from[2],
                 from[0], to[1], to[2],
                 from[0], from[1], to[2],
+                from[0], from[1], from[2],
             ];
             break;
     }
 
-    vertexData.indices = [0, 1, 2, 2, 3, 0];
+    if (face.hasOwnProperty("uv")) {
+        vertexData.uvs = [
+            face.uv[0], face.uv[1],
+            face.uv[0], face.uv[3],
+            face.uv[2], face.uv[3],
+            face.uv[2], face.uv[1],
+        ];
+    } else {
+        vertexData.uvs = [
+            0, 0,
+            16, 0,
+            16, 16,
+            0, 16,
+        ];
+    }
+
+    vertexData.indices = [0, 1, 2, 3, 0, 2];
     vertexData.applyToMesh(side);
+
+    side.material = await createMaterial(face, textures, scene);
 
     if (element.hasOwnProperty("rotation")) {
         const origin = new BABYLON.Vector3(
@@ -135,7 +191,7 @@ async function createMesh(blockstate, randomNumber, scene) {
 
         for (let element of model.elements) {
             for (let direction of Object.keys(element.faces)) {
-                const side = createSide(element, direction, scene);
+                const side = await createSide(element, direction, model.textures, scene);
 
                 if (part.hasOwnProperty("y")) {
                     side.rotate(BABYLON.Axis.Y, -part.y / 180 * Math.PI);

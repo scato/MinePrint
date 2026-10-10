@@ -4,6 +4,7 @@ const LANGUAGE = "en_us";
 const REPO_ROOT = `https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/${VERSION}`;
 
 export const STRUCTURES_ROOT = `${REPO_ROOT}/data/minecraft/structure`;
+export const TEXTURES_ROOT = `${REPO_ROOT}/assets/minecraft/textures`;
 
 export async function fetchLanguageFile() {
     try {
@@ -171,4 +172,12 @@ export function lookupModel(model, modelFile) {
     }
 
     return combined;
+}
+
+export function lookupTexture(texture, textures) {
+    if (texture.startsWith("#")) {
+        return lookupTexture(textures[texture.replace("#", "")], textures);
+    } else {
+        return texture;
+    }
 }
