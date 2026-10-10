@@ -44,57 +44,61 @@ function createSide(element, direction, scene) {
     const side = new BABYLON.Mesh(direction, scene);
     const vertexData = new BABYLON.VertexData();
 
-    let x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3;
+    const from = [element.from[0] / 16 - 0.5, element.from[1] / 16 - 0.5, element.from[2] / 16 - 0.5];
+    const to = [element.to[0] / 16 - 0.5, element.to[1] / 16 - 0.5, element.to[2] / 16 - 0.5];
 
     switch (direction) {
         case "up":
-            [x0, y0, z0] = [element.from[0] / 16, element.to[1] / 16, element.from[2] / 16];
-            [x1, y1, z1] = [element.to[0] / 16, element.to[1] / 16, element.from[2] / 16];
-            [x2, y2, z2] = [element.to[0] / 16, element.to[1] / 16, element.to[2] / 16];
-            [x3, y3, z3] = [element.from[0] / 16, element.to[1] / 16, element.to[2] / 16];
+            vertexData.positions = [
+                from[0], to[1], from[2],
+                to[0], to[1], from[2],
+                to[0], to[1], to[2],
+                from[0], to[1], to[2],
+            ];
             break;
         case "down":
-            [x0, y0, z0] = [element.from[0] / 16, element.from[1] / 16, element.from[2] / 16];
-            [x1, y1, z1] = [element.from[0] / 16, element.from[1] / 16, element.to[2] / 16];
-            [x2, y2, z2] = [element.to[0] / 16, element.from[1] / 16, element.to[2] / 16];
-            [x3, y3, z3] = [element.to[0] / 16, element.from[1] / 16, element.from[2] / 16];
+            vertexData.positions = [
+                from[0], from[1], from[2],
+                from[0], from[1], to[2],
+                to[0], from[1], to[2],
+                to[0], from[1], from[2],
+            ];
             break;
         case "north":
-            [x0, y0, z0] = [element.from[0] / 16, element.from[1] / 16, element.from[2] / 16];
-            [x1, y1, z1] = [element.to[0] / 16, element.from[1] / 16, element.from[2] / 16];
-            [x2, y2, z2] = [element.to[0] / 16, element.to[1] / 16, element.from[2] / 16];
-            [x3, y3, z3] = [element.from[0] / 16, element.to[1] / 16, element.from[2] / 16];
+            vertexData.positions = [
+                from[0], from[1], from[2],
+                to[0], from[1], from[2],
+                to[0], to[1], from[2],
+                from[0], to[1], from[2],
+            ];
             break;
         case "south":
-            [x0, y0, z0] = [element.from[0] / 16, element.from[1] / 16, element.to[2] / 16];
-            [x1, y1, z1] = [element.from[0] / 16, element.to[1] / 16, element.to[2] / 16];
-            [x2, y2, z2] = [element.to[0] / 16, element.to[1] / 16, element.to[2] / 16];
-            [x3, y3, z3] = [element.to[0] / 16, element.from[1] / 16, element.to[2] / 16];
+            vertexData.positions = [
+                from[0], from[1], to[2],
+                from[0], to[1], to[2],
+                to[0], to[1], to[2],
+                to[0], from[1], to[2],
+            ];
             break;
         case "east":
-            [x0, y0, z0] = [element.from[0] / 16, element.from[1] / 16, element.from[2] / 16];
-            [x1, y1, z1] = [element.from[0] / 16, element.to[1] / 16, element.from[2] / 16];
-            [x2, y2, z2] = [element.from[0] / 16, element.to[1] / 16, element.to[2] / 16];
-            [x3, y3, z3] = [element.from[0] / 16, element.from[1] / 16, element.to[2] / 16];
+            vertexData.positions = [
+                to[0], from[1], from[2],
+                to[0], from[1], to[2],
+                to[0], to[1], to[2],
+                to[0], to[1], from[2],
+            ];
             break;
         case "west":
-            [x0, y0, z0] = [element.to[0] / 16, element.from[1] / 16, element.from[2] / 16];
-            [x1, y1, z1] = [element.to[0] / 16, element.from[1] / 16, element.to[2] / 16];
-            [x2, y2, z2] = [element.to[0] / 16, element.to[1] / 16, element.to[2] / 16];
-            [x3, y3, z3] = [element.to[0] / 16, element.to[1] / 16, element.from[2] / 16];
+            vertexData.positions = [
+                from[0], from[1], from[2],
+                from[0], to[1], from[2],
+                from[0], to[1], to[2],
+                from[0], from[1], to[2],
+            ];
             break;
     }
 
-    vertexData.positions = [
-        x0, y0, z0,
-        x1, y1, z1,
-        x2, y2, z2,
-        x2, y2, z2,
-        x3, y3, z3,
-        x0, y0, z0,
-    ];
-
-    vertexData.indices = [0, 1, 2, 3, 4, 5];
+    vertexData.indices = [0, 1, 2, 2, 3, 0];
 
     vertexData.applyToMesh(side);
 
@@ -119,9 +123,15 @@ async function createMesh(blockstate, randomNumber, scene) {
             for (let direction of Object.keys(element.faces)) {
                 const side = createSide(element, direction, scene);
 
-                if (side !== undefined) {
-                    sides.push(side);
+                if (part.hasOwnProperty("x")) {
+                    side.rotation.x = part.x / 180 * Math.PI;
                 }
+
+                if (part.hasOwnProperty("y")) {
+                    side.rotation.y = part.y / 180 * Math.PI;
+                }
+
+                sides.push(side);
             }
         }
     }
@@ -132,6 +142,7 @@ async function createMesh(blockstate, randomNumber, scene) {
 
 export async function createScene(size, blocks, palette, aspectRatio, engine) {
     const scene = new BABYLON.Scene(engine);
+    scene.useRightHandedSystem = true;
     scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
 
     createCamera(size, aspectRatio, scene);
@@ -148,9 +159,9 @@ export async function createScene(size, blocks, palette, aspectRatio, engine) {
             continue;
         }
 
-        mesh.position.x = block.pos[0];
-        mesh.position.y = block.pos[1];
-        mesh.position.z = block.pos[2];
+        mesh.position.x = block.pos[0] + 0.5;
+        mesh.position.y = block.pos[1] + 0.5;
+        mesh.position.z = block.pos[2] + 0.5;
     }
 
     return scene;
