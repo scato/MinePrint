@@ -175,7 +175,9 @@ export function lookupModel(model, modelFile) {
 }
 
 export function lookupTexture(texture, textures) {
-    if (texture.startsWith("#")) {
+    if (typeof texture === "object") {
+        return lookupTexture(texture.sprite, textures);
+    } else if (texture.startsWith("#")) {
         return lookupTexture(textures[texture.replace("#", "")], textures);
     } else {
         return texture;

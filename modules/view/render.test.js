@@ -18,7 +18,7 @@ async function renderBlock(blockstate, aspectRatio, engine) {
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.querySelector("#render-test canvas");
     const aspectRatio = canvas.width / canvas.height;
-    const engine = new BABYLON.Engine(canvas, true);
+    const engine = new BABYLON.Engine(canvas, true, undefined, true);
 
     let example = `
         {

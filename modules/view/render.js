@@ -10,13 +10,13 @@ function nextRandomNumber(randomNumber) {
 }
 
 function createCamera(size, aspectRatio, scene) {
+    const boudingRadius = Math.sqrt(size[0] * size[0] + size[1] * size[1] + size[2] * size[2]) / 2;
+
     const target = new BABYLON.Vector3(size[0] / 2, size[1] / 2, size[2] / 2);
-    const position = target.add(new BABYLON.Vector3(2, Math.sin(60 / 180 * Math.PI) * 2, 2));
+    const position = target.add(new BABYLON.Vector3(2 * boudingRadius, 2 * boudingRadius * Math.sin(60 / 180 * Math.PI), 2 * boudingRadius));
 
     const camera = new BABYLON.FreeCamera("camera", position, scene);
     camera.setTarget(target);
-
-    const boudingRadius = Math.sqrt(size[0] * size[0] + size[1] * size[1] + size[2] * size[2]) / 2;
 
     camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
     if (aspectRatio < 1) {
@@ -49,6 +49,7 @@ function createTexture(id, scene) {
         for (let t of scene.textures) {
             if (t.url === url) {
                 resolve(t);
+                return;
             }
         }
 
@@ -75,18 +76,9 @@ async function createMaterial(face, textures, scene) {
 
     material.diffuseTexture = await createTexture(texture, scene);
 
-    if (face.hasOwnProperty("rotation")) {
-        // TODO: maybe we have to rotate the texture as well as the uvs...
-        // material.diffuseTexture = material.diffuseTexture.clone();
-        // if (face.rotation === 90) {
-        //     material.diffuseTexture.uOffset = -1 * material.diffuseTexture.uScale;
-        //     // material.diffuseTexture.vOffset = -1 * material.diffuseTexture.uScale;
-        // }
-        // if (face.rotation === 180) {
-        //     material.diffuseTexture.uOffset = -1 * material.diffuseTexture.uScale;
-        //     material.diffuseTexture.vOffset = -1 * material.diffuseTexture.uScale;
-        // }
-        // material.diffuseTexture.wAng = face.rotation / 180 * Math.PI;
+    if (face.hasOwnProperty("tintindex")) {
+        // apply the color green from plains: #91BD59
+        material.diffuseColor = new BABYLON.Color3(0x91 / 0x100, 0xBD / 0x100, 0x59 / 0x100);
     }
 
     return material;
@@ -152,38 +144,37 @@ async function createSide(element, direction, textures, scene) {
     }
 
     let uvs;
+
     if (face.hasOwnProperty("uv")) {
         uvs = [
-            new BABYLON.Vector2(face.uv[0], face.uv[1]),
-            new BABYLON.Vector2(face.uv[2], face.uv[3]),
+            face.uv[0], face.uv[1],
+            face.uv[2], face.uv[1],
+            face.uv[2], face.uv[3],
+            face.uv[0], face.uv[3],
         ];
     } else {
         uvs = [
-            new BABYLON.Vector2(0, 0),
-            new BABYLON.Vector2(16, 16),
+            0, 0,
+            16, 0,
+            16, 16,
+            0, 16,
         ];
     }
 
+
     if (face.hasOwnProperty("rotation")) {
-        // TODO: not sure if rotating the uvs is enough, but it looks better than before
-        const center = uvs[0].add(uvs[1]).scale(0.5);
-        
-        uvs[0] = uvs[0]
-            .subtract(center)
-            .rotate(-face.rotation / 180 * Math.PI)
-            .add(center);
-        uvs[1] = uvs[1]
-            .subtract(center)
-            .rotate(-face.rotation / 180 * Math.PI)
-            .add(center);
+        let rotation = face.rotation;
+
+        while (rotation > 0) {
+            // move a uv-coordinate from the end of the array to the beginning
+            // once for y and once for x
+            uvs.unshift(uvs.pop());
+            uvs.unshift(uvs.pop());
+            rotation -= 90;
+        }
     }
 
-    vertexData.uvs = [
-        uvs[0].x, uvs[0].y,
-        uvs[1].x, uvs[0].y,
-        uvs[1].x, uvs[1].y,
-        uvs[0].x, uvs[1].y,
-    ];
+    vertexData.uvs = uvs;
 
     vertexData.indices = [0, 1, 2, 3, 0, 2];
     vertexData.applyToMesh(side);
@@ -221,6 +212,10 @@ async function createMesh(blockstate, randomNumber, scene) {
     const sides = [];
     for (let part of parts) {
         let model = lookupModel(part.model, modelFile);
+
+        if (!model.hasOwnProperty("elements")) {
+            continue;
+        }
 
         for (let element of model.elements) {
             for (let direction of Object.keys(element.faces)) {
