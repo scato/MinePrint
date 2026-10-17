@@ -13,7 +13,8 @@ function createCamera(size, aspectRatio, scene) {
     const boudingRadius = Math.sqrt(size[0] * size[0] + size[1] * size[1] + size[2] * size[2]) / 2;
 
     const target = new BABYLON.Vector3(size[0] / 2, size[1] / 2, size[2] / 2);
-    const position = target.add(new BABYLON.Vector3(2 * boudingRadius, 2 * boudingRadius * Math.sin(60 / 180 * Math.PI), 2 * boudingRadius));
+    const angle = 45;
+    const position = target.add(new BABYLON.Vector3(2 * boudingRadius * Math.sin(angle / 180 * Math.PI), 2 * boudingRadius * Math.sin(30 / 180 * Math.PI), 2 * boudingRadius * Math.cos(angle / 180 * Math.PI)));
 
     const camera = new BABYLON.FreeCamera("camera", position, scene);
     camera.setTarget(target);
@@ -80,6 +81,8 @@ async function createMaterial(face, textures, scene) {
         // apply the color green from plains: #91BD59
         material.diffuseColor = new BABYLON.Color3(0x91 / 0x100, 0xBD / 0x100, 0x59 / 0x100);
     }
+
+    material.specularColor = BABYLON.Color3.Black();
 
     return material;
 }
@@ -199,43 +202,49 @@ async function createSide(element, direction, textures, scene) {
     return side;
 }
 
-async function createMesh(blockstate, randomNumber, scene) {
+async function createMeshes(blockstate, scene) {
     const blockStateFile = await blockStateFilePromise;
     const modelFile = await modelFilePromise;
 
-    const parts = lookupParts(blockstate, randomNumber, blockStateFile);
+    const variants = lookupParts(blockstate, blockStateFile);
 
-    if (parts === null) {
-        return null;
-    }
-
-    const sides = [];
-    for (let part of parts) {
-        let model = lookupModel(part.model, modelFile);
-
-        if (!model.hasOwnProperty("elements")) {
-            continue;
+    return await Promise.all(variants.map(async (parts) => {
+        if (parts === null) {
+            return null;
         }
-
-        for (let element of model.elements) {
-            for (let direction of Object.keys(element.faces)) {
-                const side = await createSide(element, direction, model.textures, scene);
-
-                if (part.hasOwnProperty("y")) {
-                    side.rotate(BABYLON.Axis.Y, -part.y / 180 * Math.PI);
+    
+        const sides = [];
+        for (let part of parts) {
+            let model = lookupModel(part.model, modelFile);
+    
+            if (!model.hasOwnProperty("elements")) {
+                continue;
+            }
+    
+            for (let element of model.elements) {
+                for (let direction of Object.keys(element.faces)) {
+                    const side = await createSide(element, direction, model.textures, scene);
+    
+                    if (part.hasOwnProperty("y")) {
+                        side.rotate(BABYLON.Axis.Y, -part.y / 180 * Math.PI);
+                    }
+    
+                    if (part.hasOwnProperty("x")) {
+                        side.rotate(BABYLON.Axis.X, -part.x / 180 * Math.PI);
+                    }    
+    
+                    sides.push(side);
                 }
-
-                if (part.hasOwnProperty("x")) {
-                    side.rotate(BABYLON.Axis.X, -part.x / 180 * Math.PI);
-                }    
-
-                sides.push(side);
             }
         }
-    }
-
-    // set multiMultiMaterials to true
-    return BABYLON.Mesh.MergeMeshes(sides, true, false, undefined, false, true);
+    
+        // set multiMultiMaterials to true
+        const mesh = BABYLON.Mesh.MergeMeshes(sides, true, false, undefined, false, true);
+        if (mesh !== null) {
+            mesh.isVisible = false;
+        }
+        return mesh;
+    }));
 }
 
 export async function createScene(size, blocks, palette, aspectRatio, engine) {
@@ -246,20 +255,40 @@ export async function createScene(size, blocks, palette, aspectRatio, engine) {
     createCamera(size, aspectRatio, scene);
     createLight(scene);
 
+    const meshesByBlockstate = {};
+
+    await Promise.all(palette.map(async (blockstate) => {
+        const meshes = await createMeshes(blockstate, scene);
+
+        meshesByBlockstate[JSON.stringify(blockstate)] = meshes;
+    }));
+
     let randomNumber = 42;
     for (let block of blocks) {
         randomNumber = nextRandomNumber(randomNumber);
 
+        // look up blockstate because of jigsaw blocks
         const blockstate = lookupBlockstate(block, palette);
-        const mesh = await createMesh(blockstate, randomNumber, scene);
+        const blockstateJson = JSON.stringify(blockstate);
+
+        let meshes;
+        if (meshesByBlockstate.hasOwnProperty(blockstateJson)) {
+            meshes = meshesByBlockstate[blockstateJson];
+        } else {
+            // blockstate may not be in the palette because of jigsaw blocks
+            meshes = await createMeshes(blockstate, scene);
+        }
+
+        const mesh = meshes.length === 1 ? meshes[0] : meshes[randomNumber % meshes.length];
 
         if (mesh === null) {
             continue;
         }
 
-        mesh.position.x = block.pos[0] + 0.5;
-        mesh.position.y = block.pos[1] + 0.5;
-        mesh.position.z = block.pos[2] + 0.5;
+        const instance = mesh.createInstance("block:" + block.pos.toString());
+        instance.position.x = block.pos[0] + 0.5;
+        instance.position.y = block.pos[1] + 0.5;
+        instance.position.z = block.pos[2] + 0.5;
     }
 
     return scene;

@@ -54,6 +54,17 @@ function parseVariantKey(key) {
     return condition;
 }
 
+function getPropertyDefault(k) {
+    switch (k) {
+        case "snowy":
+            return "false";
+        case "facing":
+            return "south";
+        default:
+            return null;
+    }
+}
+
 function testProperties(properties, condition) {
     if (condition.hasOwnProperty("AND")) {
         return condition.AND.every((subcondition) => testProperties(properties, subcondition));
@@ -64,19 +75,17 @@ function testProperties(properties, condition) {
     }
 
     for(let k of Object.keys(condition)) {
+        let v;
+
         if (properties === undefined) {
-            console.log(`missing Properties`);
-
-            return false;
+            v = getPropertyDefault(k);
+        } else if (!properties.hasOwnProperty(k)) {
+            v = getPropertyDefault(k);
+        } else {
+            v = properties[k];
         }
 
-        if (!properties.hasOwnProperty(k)) {
-            console.log(`missing property ${k}`);
-
-            return false;
-        }
-
-        if (properties[k] != condition[k]) {
+        if (v != condition[k]) {
             return false;
         }
     }
@@ -84,7 +93,8 @@ function testProperties(properties, condition) {
     return true;
 }
 
-export function lookupParts(blockstate, randomNumber, blockstateFile) {
+// returns an array of variants, which are arrays of parts
+export function lookupParts(blockstate, blockstateFile) {
     const name = blockstate.Name.replace("minecraft:", "");
 
     if (!blockstateFile.hasOwnProperty(name)) {
@@ -107,9 +117,9 @@ export function lookupParts(blockstate, randomNumber, blockstateFile) {
         }
 
         if (variant instanceof Array) {
-            return [variant[randomNumber % variant.length]];
+            return variant.map((parts) => [parts]);
         } else if (variant !== null) {
-            return [variant];
+            return [[variant]];
         } else {
             console.log("No variant matched");
 
@@ -130,10 +140,10 @@ export function lookupParts(blockstate, randomNumber, blockstateFile) {
             }
         }
 
-        return parts;
+        return [parts];
     }
 
-    return null;
+    return [null];
 }
 
 export function lookupModel(model, modelFile) {
