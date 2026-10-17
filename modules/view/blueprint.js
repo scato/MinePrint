@@ -4,6 +4,7 @@ import { extractBlocks, extractPalette, extractSize } from '../model/structure.j
 import { fetchLanguageFile } from './assets.js';
 import { readStructureFromUpload, writeStructureAsDownload } from './file.js';
 import { renderBlueprint } from './html.js';
+import { createScene } from './render.js';
 
 function initFileUpload(state, refreshApp) {
     const upload = document.getElementById("blueprint-file-upload");
@@ -58,6 +59,12 @@ function initDownload(state, refreshApp) {
     });
 }
 
+function initRender(state, refreshApp) {
+
+    state.engine = engine;
+    state.aspectRatio = aspectRatio;
+}
+
 const languageFilePromise = fetchLanguageFile();
 
 async function refresh(state) {
@@ -68,13 +75,31 @@ async function refresh(state) {
         const layers = generateLayers(size, blocks, palette, 1);
         const materials = generateMaterials(size, blocks, palette);
         const languageFile = await languageFilePromise;
-    
+
         const html = renderBlueprint(layers, materials, languageFile);
     
         document.getElementById("blueprint-title").innerHTML = state.title;
         document.getElementById("blueprint-viewer").innerHTML = html;
     
         document.getElementById("blueprint").style.display = "block";
+
+        if (state.engine !== undefined) {
+            state.engine.stopRenderLoop();
+        }
+    
+        // wait for the browser to parse the innerHTML
+        setTimeout(async () => {
+            const canvas = document.querySelector("#blueprint .isometric-render canvas");
+            const aspectRatio = canvas.width / canvas.height;
+            const engine = new BABYLON.Engine(canvas, true, undefined, true);
+            const scene = await createScene(size, blocks, palette, aspectRatio);
+    
+            engine.runRenderLoop(() => {
+                scene.render();
+            });
+    
+            state.engine = engine;
+        }, 0);
     } else {
         document.getElementById("blueprint").style.display = "none";
     }

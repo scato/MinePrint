@@ -1,4 +1,5 @@
 import { renderBlueprint } from './html.js';
+import { createScene } from './render.js';
 
 let blocks = [
     [
@@ -81,4 +82,10 @@ const languageFile = {
 
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("html-test").innerHTML = renderBlueprint(blocks, materials, languageFile);
+
+    // wait for the browser to parse the innerHTML
+    setTimeout(async () => {
+        const canvas = document.querySelector("#html-test .isometric-render canvas");
+        canvas.style.display = "none";
+    }, 0);
 });

@@ -66,6 +66,9 @@ export function renderBlueprint(layers, materials, languageFile) {
     
         return `
             <div class="blueprint">
+                <div class="isometric-render">
+                    <canvas width="300" height="250" style="width: 300px; height: 250px; border: 1px solid #c8ccd1"></canvas>
+                </div>
                 <h3>Blueprint</h3>
                 <div class="layered-blueprint" style="min-height:${numRows * 16}px;width:${numColumns * 16}px">
                     ${layers.map((layer, index) => renderLayer(layer, index + 1)).join("")}
