@@ -1,6 +1,10 @@
-import { readNbt } from '../model/nbt.js';
 import { STRUCTURES_ROOT } from './assets.js';
 import { readStructureFromUrl } from './file.js';
+
+const REPOS = [
+    {"url": `${STRUCTURES_ROOT}/`, "name": "InventivetalentDev/minecraft-assets"},
+    {"url": "data/scato/structure/", "name": "scato/MinePrint"},
+];
 
 async function updateUrl(state) {
     const hash = location.hash;
@@ -36,13 +40,11 @@ function renderRepoList() {
 
     let html = "";
 
-    html += repoTemplate.outerHTML
-        .replace("$url", `${STRUCTURES_ROOT}/`)
-        .replace("$name", "InventivetalentDev/minecraft-assets");
-
-    html += repoTemplate.outerHTML
-        .replace("$url", "data/scato/structure/")
-        .replace("$name", "scato/MinePrint");
+    for (let repo of REPOS) {
+        html += repoTemplate.outerHTML
+            .replace("$url", repo.url)
+            .replace("$name", repo.name);
+    }
     
     return html;
 }
@@ -60,6 +62,15 @@ async function renderItemList(url) {
     } catch (e) {
         return `Unable to load ${url}_list.json`;
     }
+
+    let parent = url.replace(/[^\/]*\/$/, "");
+    if (!REPOS.some((repo) => parent.startsWith(repo.url))) {
+        parent = "";
+    }
+
+    html += folderTemplate.outerHTML
+        .replace("$url", parent)
+        .replace("$name", "..");
 
     for (let directory of list.directories) {
         html += folderTemplate.outerHTML

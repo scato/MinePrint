@@ -14,10 +14,10 @@
         <div class="main">
             <h1>
                 MinePrint
-                <a href="about.html" class="nav-icon">
+                <a href="about.html" class="nav-icon" title="About MinePrint">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M11 13h1v2H8v-2h1v-2H8V9h3zm0-6H9V5h2z"></path><path d="M10 1a9 9 0 110 18 9 9 0 010-18m0 2a7 7 0 100 14 7 7 0 000-14"></path></g></svg>
                 </a>
-                <a href="index.html" class="nav-icon">
+                <a href="index.html" class="nav-icon" title="Home">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="m19.707 10.293-1.414 1.414L17 10.414V20H3v-9.586l-1.293 1.293-1.414-1.414L10 .586zM5 8.414V18h3v-5h4v5h3V8.414l-5-5z"></path></g></svg>
                 </a>
             </h1>
@@ -70,20 +70,20 @@
 
                 <div id="blueprint-toolbar">
                     <div class="blueprint-toolbar-left">
-                        <form action="javascript:;" class="toolbar-icon">
+                        <form action="javascript:;" class="toolbar-icon" title="Upload .nbt file">
                             <!-- no spaces between input and svg to prevent weird indentation -->
                             <input id="blueprint-file-upload" type="file" name="upload"><label for="blueprint-file-upload"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M19 19H1v-2h18zM10.703 1l5.211 5.117-1.406 1.422L11 4v11H9V4L5.492 7.54 4.086 6.116 9.296 1z"></path></g></svg></label>
                         </form>
-                        <a id="blueprint-browse" href="javascript:;" class="toolbar-icon">
+                        <a id="blueprint-browse" href="javascript:;" class="toolbar-icon" title="Browse examples">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M11.414 4H19v14H1V2h8.414zM3 16h14V6h-6.414l-2-2H3z"></path></g></svg>
                         </a>
                     </div>
                     <div class="blueprint-toolbar-center"></div>
                     <div class="blueprint-toolbar-right">
-                        <a id="blueprint-edit" href="javascript:;" class="toolbar-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="m15.4.4 4.2 4.2-3.2 3.2-4.2-4.2zM10.8 5 15 9.2l-8.6 8.6-4.5 1.5-1.2-1.2 1.5-4.5z"></path></g></svg>
+                        <a id="blueprint-edit" href="javascript:;" class="toolbar-icon" title="Edit SNBT code">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M8.5 3H6a1 1 0 00-1 1v2.488c0 1.19-.525 2.273-1.371 3.012A4 4 0 015 12.512V16a1 1 0 001 1h2.5v2H6a3 3 0 01-3-3v-3.488a2 2 0 00-1.648-1.969L1 10.484V8.516l.352-.059A2 2 0 003 6.488V4a3 3 0 013-3h2.5zM14 1a3 3 0 013 3v2.488a2 2 0 001.648 1.969l.352.059v1.968l-.352.059A2 2 0 0017 12.512V16a3 3 0 01-3 3h-2.5v-2H14a1 1 0 001-1v-3.488c0-1.19.525-2.273 1.371-3.012A4 4 0 0115 6.488V4a1 1 0 00-1-1h-2.5V1z"></path></g></svg>
                         </a>
-                        <a id="blueprint-download" href="javascript:;" class="toolbar-icon">
+                        <a id="blueprint-download" href="javascript:;" class="toolbar-icon" title="Download .nbt file">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M19 19H1v-2h18zm-8-7.104 3.5-3.5 1.414 1.414-5.207 5.208H9.293L4.086 9.81 5.5 8.396l3.5 3.5V1h2z"></path></g></svg>
                         </a>
                     </div>
@@ -95,11 +95,11 @@
             <div id="edit" style="display: none">
                 <form action="javascript:;">
                     <input id="edit-title" type="text" name="title"></span>
-                    <a id="edit-blueprint" href="javascript:;" class="nav-icon">
+                    <a id="edit-blueprint" href="javascript:;" class="nav-icon" title="Show blueprint">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="M2.5 2.5h3v3h-3zm0 6h3v3h-3zm0 6h3v3h-3zm6-12h3v3h-3zm0 6h3v3h-3zm0 6h3v3h-3zm6-12h3v3h-3zm0 6h3v3h-3zm0 6h3v3h-3z"></path></g></svg>
                     </a>
 
-                    <a id="edit-clean" href="javascript:;" class="nav-icon">
+                    <a id="edit-clean" href="javascript:;" class="nav-icon" title="Cleanup SNBT code">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><!----><g><path d="m11.813 9.778-9.899 9.9L.5 18.264l9.9-9.9zm4.077-6.906 1.58-1.579 1.415 1.414-1.58 1.58 2.086.522-.486 1.94-2.181-.546.546 2.182-1.94.485-.523-2.086-1.579 1.58-1.415-1.414 1.58-1.58-2.085-.521.485-1.94 2.182.545-.545-2.182 1.94-.485z"></path></g></svg>
                     </a>
                 </form>
