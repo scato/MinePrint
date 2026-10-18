@@ -100,7 +100,7 @@ export function lookupParts(blockstate, blockstateFile) {
     if (!blockstateFile.hasOwnProperty(name)) {
         console.log(`blockstate not found for ${name}`);
 
-        return null;
+        return [null];
     }
 
     const definition = blockstateFile[name];
@@ -123,7 +123,7 @@ export function lookupParts(blockstate, blockstateFile) {
         } else {
             console.log("No variant matched");
 
-            return null;
+            return [null];
         }
     }
 

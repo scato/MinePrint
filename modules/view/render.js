@@ -9,15 +9,18 @@ function nextRandomNumber(randomNumber) {
     return 48271 * randomNumber % 2147483647;
 }
 
-function createCamera(size, aspectRatio, scene) {
+function createCamera(size, angle, aspectRatio, scene) {
     const boudingRadius = Math.sqrt(size[0] * size[0] + size[1] * size[1] + size[2] * size[2]) / 2;
-
     const target = new BABYLON.Vector3(size[0] / 2, size[1] / 2, size[2] / 2);
-    const angle = 45;
-    const position = target.add(new BABYLON.Vector3(2 * boudingRadius * Math.sin(angle / 180 * Math.PI), 2 * boudingRadius * Math.sin(30 / 180 * Math.PI), 2 * boudingRadius * Math.cos(angle / 180 * Math.PI)));
 
-    const camera = new BABYLON.FreeCamera("camera", position, scene);
-    camera.setTarget(target);
+    const camera = new BABYLON.ArcRotateCamera(
+        "camera",
+        angle / 180 * Math.PI,
+        60 / 180 * Math.PI,
+        3 * boudingRadius,
+        target,
+        scene
+    );
 
     camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
     if (aspectRatio < 1) {
@@ -35,8 +38,18 @@ function createCamera(size, aspectRatio, scene) {
     return camera;
 }
 
-function createLight(scene) {
-    const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 3, 2), scene);
+export function getLightDirection(angle) {
+    const delta = 70;
+    const x = Math.sin((delta - angle) / 180 * Math.PI);
+    const y = 1.2;
+    const z = Math.cos((delta - angle) / 180 * Math.PI);
+
+    return new BABYLON.Vector3(x, y, z);
+}
+
+function createLight(angle, scene) {
+    const direction = getLightDirection(angle);
+    const light = new BABYLON.HemisphericLight("light", direction, scene);
 
     return light;
 }
@@ -191,12 +204,13 @@ async function createSide(element, direction, textures, scene) {
             element.rotation.origin[2] / 16 - 0.5
         );
 
-        side.translate(origin, 1);
+        side.translate(origin, 1, BABYLON.Space.WORLD);
         side.rotate(
             BABYLON.Axis[element.rotation.axis.toUpperCase()],
-            element.rotation.angle / 180 * Math.PI
+            element.rotation.angle / 180 * Math.PI,
+            BABYLON.Space.WORLD
         );
-        side.translate(origin, -1);
+        side.translate(origin, -1, BABYLON.Space.WORLD);
     }
 
     return side;
@@ -226,12 +240,12 @@ async function createMeshes(blockstate, scene) {
                     const side = await createSide(element, direction, model.textures, scene);
     
                     if (part.hasOwnProperty("y")) {
-                        side.rotate(BABYLON.Axis.Y, -part.y / 180 * Math.PI);
+                        side.rotate(BABYLON.Axis.Y, -part.y / 180 * Math.PI, BABYLON.Space.WORLD);
                     }
     
                     if (part.hasOwnProperty("x")) {
-                        side.rotate(BABYLON.Axis.X, -part.x / 180 * Math.PI);
-                    }    
+                        side.rotate(BABYLON.Axis.X, -part.x / 180 * Math.PI, BABYLON.Space.WORLD);
+                    }
     
                     sides.push(side);
                 }
@@ -247,13 +261,13 @@ async function createMeshes(blockstate, scene) {
     }));
 }
 
-export async function createScene(size, blocks, palette, aspectRatio, engine) {
+export async function createScene(size, blocks, palette, angle, aspectRatio, engine) {
     const scene = new BABYLON.Scene(engine);
     scene.useRightHandedSystem = true;
     scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
 
-    createCamera(size, aspectRatio, scene);
-    createLight(scene);
+    createCamera(size, angle, aspectRatio, scene);
+    createLight(angle, scene);
 
     const meshesByBlockstate = {};
 
@@ -286,9 +300,8 @@ export async function createScene(size, blocks, palette, aspectRatio, engine) {
         }
 
         const instance = mesh.createInstance("block:" + block.pos.toString());
-        instance.position.x = block.pos[0] + 0.5;
-        instance.position.y = block.pos[1] + 0.5;
-        instance.position.z = block.pos[2] + 0.5;
+        const position = new BABYLON.Vector3(block.pos[0] + 0.5, block.pos[1] + 0.5, block.pos[2] + 0.5);
+        instance.translate(position, 1, BABYLON.Space.WORLD);
     }
 
     return scene;

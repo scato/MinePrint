@@ -4,7 +4,7 @@ import { extractBlocks, extractPalette, extractSize } from '../model/structure.j
 import { fetchLanguageFile } from './assets.js';
 import { readStructureFromUpload, writeStructureAsDownload } from './file.js';
 import { renderBlueprint } from './html.js';
-import { createScene } from './render.js';
+import { createScene, getLightDirection } from './render.js';
 
 function initFileUpload(state, refreshApp) {
     const upload = document.getElementById("blueprint-file-upload");
@@ -38,6 +38,20 @@ function initBrowse(state, refreshApp) {
     });
 }
 
+function initRotate(state, refreshApp) {
+    const anchorLeft = document.getElementById("blueprint-toolbar-rotate-left");
+    const anchorRight = document.getElementById("blueprint-toolbar-rotate-right");
+
+    anchorLeft.addEventListener("click", () => {
+        state.renderAngle = (state.renderAngle - 90 + 360) % 360;
+        state.renderDirty = true;
+    });
+    anchorRight.addEventListener("click", () => {
+        state.renderAngle = (state.renderAngle + 90) % 360;
+        state.renderDirty = true;
+    });
+}
+
 function initEdit(state, refreshApp) {
     const anchor = document.getElementById("blueprint-edit");
 
@@ -57,12 +71,6 @@ function initDownload(state, refreshApp) {
     anchor.addEventListener("click", async () => {
         await writeStructureAsDownload(state.title + ".nbt", state.structure);
     });
-}
-
-function initRender(state, refreshApp) {
-
-    state.engine = engine;
-    state.aspectRatio = aspectRatio;
 }
 
 const languageFilePromise = fetchLanguageFile();
@@ -86,16 +94,26 @@ async function refresh(state) {
         if (state.engine !== undefined) {
             state.engine.stopRenderLoop();
         }
-    
+
+        state.renderAngle = 45;
+        state.renderDirty = true;
+
         // wait for the browser to parse the innerHTML
         setTimeout(async () => {
             const canvas = document.querySelector("#blueprint .isometric-render canvas");
             const aspectRatio = canvas.width / canvas.height;
             const engine = new BABYLON.Engine(canvas, true, undefined, true);
-            const scene = await createScene(size, blocks, palette, aspectRatio);
-    
-            engine.runRenderLoop(() => {
-                scene.render();
+            const scene = await createScene(size, blocks, palette, state.renderAngle, aspectRatio);
+
+            scene.executeWhenReady(() => {
+                engine.runRenderLoop(() => {
+                    if (state.renderDirty) {
+                        scene.cameras[0].alpha = state.renderAngle / 180 * Math.PI;
+                        scene.lights[0].direction = getLightDirection(state.renderAngle);
+                        scene.render();
+                        state.renderDirty = false;
+                    }
+                });
             });
     
             state.engine = engine;
@@ -108,6 +126,8 @@ async function refresh(state) {
 export async function init(state, refreshApp) {
     initFileUpload(state, refreshApp);
     initBrowse(state, refreshApp);
+
+    initRotate(state, refreshApp);
 
     initEdit(state, refreshApp);
     initDownload(state, refreshApp);
