@@ -239,12 +239,12 @@ async function createMeshes(blockstate, scene) {
                 for (let direction of Object.keys(element.faces)) {
                     const side = await createSide(element, direction, model.textures, scene);
     
-                    if (part.hasOwnProperty("y")) {
-                        side.rotate(BABYLON.Axis.Y, -part.y / 180 * Math.PI, BABYLON.Space.WORLD);
-                    }
-    
                     if (part.hasOwnProperty("x")) {
                         side.rotate(BABYLON.Axis.X, -part.x / 180 * Math.PI, BABYLON.Space.WORLD);
+                    }
+    
+                    if (part.hasOwnProperty("y")) {
+                        side.rotate(BABYLON.Axis.Y, -part.y / 180 * Math.PI, BABYLON.Space.WORLD);
                     }
     
                     sides.push(side);
