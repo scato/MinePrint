@@ -18,6 +18,8 @@ function generateAmount(blockstate) {
             return [blockstate.Name, 0];
         } else if (blockstate.Name === "minecraft:piston_head") {
             return [blockstate.Name, 0];
+        } else if (blockstate.Name === "minecraft:nether_portal") {
+            return [blockstate.Name, 0];
         }
 
         // these blockstates should be counted double
