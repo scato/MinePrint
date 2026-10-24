@@ -132,10 +132,18 @@ export function lookupParts(blockstate, blockstateFile) {
 
         for (let candidate of definition.multipart) {
             if (!candidate.hasOwnProperty("when")) {
-                parts.push(candidate.apply);
+                if (candidate.apply instanceof Array) {
+                    parts.push(...candidate.apply);
+                } else {
+                    parts.push(candidate.apply);
+                }
             } else if (blockstate.hasOwnProperty("Properties")) {
                 if (testProperties(blockstate.Properties, candidate.when)) {
-                    parts.push(candidate.apply);
+                    if (candidate.apply instanceof Array) {
+                        parts.push(...candidate.apply);
+                    } else {
+                        parts.push(candidate.apply);
+                    }
                 }
             }
         }

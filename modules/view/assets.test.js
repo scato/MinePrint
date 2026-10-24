@@ -65,9 +65,14 @@ const blockStateFile = {
     "complex_multipart": {
         "multipart": [
             {
-                "apply": {
-                    "model": "d0"
-                }
+                "apply": [
+                    {
+                        "model": "d0.0"
+                    },
+                    {
+                        "model": "d0.1"
+                    }
+                ]
             },
             {
                 "apply": {
@@ -152,9 +157,9 @@ assertDeepEqual(expected3, actual3);
 blockstate1 = {Name: "minecraft:complex_multipart", Properties: {"x": 1, "y": 1}};
 blockstate2 = {Name: "minecraft:complex_multipart", Properties: {"x": 2, "y": 1}};
 blockstate3 = {Name: "minecraft:complex_multipart", Properties: {"x": 1, "y": 2}};
-expected1 = [[{"model": "d0"}, {"model": "d1"}]];
-expected2 = [[{"model": "d0"}, {"model": "d2"}]];
-expected3 = [[{"model": "d0"}, {"model": "d2"}]];
+expected1 = [[{"model": "d0.0"}, {"model": "d0.1"}, {"model": "d1"}]];
+expected2 = [[{"model": "d0.0"}, {"model": "d0.1"}, {"model": "d2"}]];
+expected3 = [[{"model": "d0.0"}, {"model": "d0.1"}, {"model": "d2"}]];
 actual1 = lookupParts(blockstate1, blockStateFile);
 actual2 = lookupParts(blockstate2, blockStateFile);
 actual3 = lookupParts(blockstate3, blockStateFile);
