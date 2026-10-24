@@ -204,13 +204,12 @@ async function createSide(element, direction, textures, scene) {
             element.rotation.origin[2] / 16 - 0.5
         );
 
-        side.translate(origin, 1, BABYLON.Space.WORLD);
+        side.setPivotPoint(origin);
         side.rotate(
             BABYLON.Axis[element.rotation.axis.toUpperCase()],
             element.rotation.angle / 180 * Math.PI,
             BABYLON.Space.WORLD
         );
-        side.translate(origin, -1, BABYLON.Space.WORLD);
     }
 
     return side;
@@ -241,10 +240,26 @@ async function createMeshes(blockstate, scene) {
     
                     if (part.hasOwnProperty("x")) {
                         side.rotate(BABYLON.Axis.X, -part.x / 180 * Math.PI, BABYLON.Space.WORLD);
+
+                        // if this side was rotated around a pivot point, we need to move this side
+                        // so that its absolute pivot point ends up where it belongs
+                        const rot = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.X, -part.x / 180 * Math.PI);
+                        const pivot1 = side.getPivotPoint();
+                        const pivot2 = new BABYLON.Vector3();
+                        pivot1.rotateByQuaternionToRef(rot, pivot2);
+                        side.position.addInPlace(pivot2.subtract(pivot1));
                     }
     
                     if (part.hasOwnProperty("y")) {
                         side.rotate(BABYLON.Axis.Y, -part.y / 180 * Math.PI, BABYLON.Space.WORLD);
+
+                        // if this side was rotated around a pivot point, we need to move this side
+                        // so that its absolute pivot point ends up where it belongs
+                        const rot = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, -part.y / 180 * Math.PI);
+                        const pivot1 = side.getPivotPoint();
+                        const pivot2 = new BABYLON.Vector3();
+                        pivot1.rotateByQuaternionToRef(rot, pivot2);
+                        side.position.addInPlace(pivot2.subtract(pivot1));
                     }
     
                     sides.push(side);
@@ -300,7 +315,7 @@ export async function createScene(size, blocks, palette, angle, aspectRatio, eng
         }
 
         const instance = mesh.createInstance("block:" + block.pos.toString());
-        const position = new BABYLON.Vector3(block.pos[0] + 0.5, block.pos[1] + 0.5, block.pos[2] + 0.5);
+        const position = new BABYLON.Vector3(0.5 + block.pos[0], 0.5 + block.pos[1], 0.5 + block.pos[2]);
         instance.translate(position, 1, BABYLON.Space.WORLD);
     }
 
